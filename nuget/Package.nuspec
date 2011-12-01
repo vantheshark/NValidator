@@ -1,0 +1,21 @@
+<?xml version="1.0"?>
+<package>
+  <metadata>
+    <id>NValidator</id>
+    <version>1.0</version>
+    <authors>Van Thoai Nguyen</authors>
+    <owners>Van Thoai Nguyen</owners>
+    <licenseUrl>http://sam.zoy.org/wtfpl/COPYING</licenseUrl>
+	<projectUrl>https://github.com/vanthoainguyen/NValidator</projectUrl>	
+    <iconUrl>http://img265.imageshack.us/img265/8724/validation.png</iconUrl>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+	<summary>NValidator is a lightweight extensible validation library for .NET that support fluent syntax.</summary>    
+	<description>The implementation and fluent syntax are inspired from the well-known library Fluent Validation.
+However, I implemented it using Chain of Reponsibility pattern and made it fully support Dependency Injection for validator classes.</description>
+    <releaseNotes>First release</releaseNotes>
+    <copyright>Copyright 2011</copyright>
+    <tags>Fluent Validation</tags>
+    <dependencies>
+    </dependencies>
+  </metadata>
+</package>
