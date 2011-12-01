@@ -1,0 +1,104 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>8.0.30703</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{DADD8ED0-7BE4-4E1F-A572-155B23C0048D}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>NValidator.Test</RootNamespace>
+    <AssemblyName>NValidator.Test</AssemblyName>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="Moq">
+      <HintPath>..\packages\Moq.4.0.10827\lib\NET40\Moq.dll</HintPath>
+    </Reference>
+    <Reference Include="nunit.framework">
+      <HintPath>..\packages\NUnit.2.5.10.11092\lib\nunit.framework.dll</HintPath>
+    </Reference>
+    <Reference Include="nunit.mocks">
+      <HintPath>..\packages\NUnit.2.5.10.11092\lib\nunit.mocks.dll</HintPath>
+    </Reference>
+    <Reference Include="pnunit.framework">
+      <HintPath>..\packages\NUnit.2.5.10.11092\lib\pnunit.framework.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.ComponentModel.DataAnnotations" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="ChainingValidatorsTests.cs" />
+    <Compile Include="ResetDefaultValidatorFactoryTests.cs" />
+    <Compile Include="DefaultValidatorFactoryTests.cs" />
+    <Compile Include="Order.cs" />
+    <Compile Include="OrderDetail.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="SimpleTests.cs" />
+    <Compile Include="ValidatorExtensions\NotTests.cs" />
+    <Compile Include="ValidatorExtensions\StopOnFirstErrorTests.cs" />
+    <Compile Include="ValidatorExtensions\MustBeEmailTests.cs" />
+    <Compile Include="ValidatorExtensions\IgnoreValidationTests.cs" />
+    <Compile Include="ValidatorExtensions\WithMessageTests.cs" />
+    <Compile Include="Validators\AllowedValuesValidatorTests.cs" />
+    <Compile Include="Validators\ConditionalValidatorTests.cs" />
+    <Compile Include="Validators\CompositeValidatorTests.cs" />
+    <Compile Include="ValidatorExtensions\MustTests.cs" />
+    <Compile Include="Validators\DataAnnotationValidatorAdaptorTests.cs" />
+    <Compile Include="Validators\GreaterThanOrEqualValidatorTests.cs" />
+    <Compile Include="Validators\GreaterThanValidatorTests.cs" />
+    <Compile Include="Validators\LazyValidatorTests.cs" />
+    <Compile Include="Validators\LessThanOrEqualValidatorTests.cs" />
+    <Compile Include="Validators\LessThanValidatorTests.cs" />
+    <Compile Include="Validators\NotEmptyValidatorTests.cs" />
+    <Compile Include="Validators\LengthValidatorTests.cs" />
+    <Compile Include="Validators\EqualValidatorTests.cs" />
+    <Compile Include="Validators\NotEqualValidatorTests.cs" />
+    <Compile Include="Validators\DoNothingValidatorTests.cs" />
+    <Compile Include="Validators\TypeValidatorTests.cs" />
+    <Compile Include="Validators\NotNullValidatorTests.cs" />
+    <Compile Include="Validators\PredicateValidatorTests.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\NValidator\NValidator.csproj">
+      <Project>{7B02B537-CF3B-4ECD-BAFE-3597C6024C8F}</Project>
+      <Name>NValidator</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

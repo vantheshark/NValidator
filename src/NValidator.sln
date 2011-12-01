@@ -1,0 +1,26 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 11.00
+# Visual Studio 2010
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NValidator", "NValidator\NValidator.csproj", "{7B02B537-CF3B-4ECD-BAFE-3597C6024C8F}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NValidator.Test", "NValidator.Test\NValidator.Test.csproj", "{DADD8ED0-7BE4-4E1F-A572-155B23C0048D}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{7B02B537-CF3B-4ECD-BAFE-3597C6024C8F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7B02B537-CF3B-4ECD-BAFE-3597C6024C8F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7B02B537-CF3B-4ECD-BAFE-3597C6024C8F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7B02B537-CF3B-4ECD-BAFE-3597C6024C8F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{DADD8ED0-7BE4-4E1F-A572-155B23C0048D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DADD8ED0-7BE4-4E1F-A572-155B23C0048D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DADD8ED0-7BE4-4E1F-A572-155B23C0048D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DADD8ED0-7BE4-4E1F-A572-155B23C0048D}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
