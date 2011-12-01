@@ -26,7 +26,7 @@ namespace NValidator.Builders
             ContainerName = containerName;
         }
 
-        protected object GetObjectToValidate(T value)
+        protected virtual object GetObjectToValidate(T value)
         {
             try
             {

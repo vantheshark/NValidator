@@ -39,7 +39,7 @@ namespace NValidator
             {
                 return;
             }
-            var builder = CreateGenericInternalValidationBuilder(new[] { typeof(T), propertyType }, containerName, propertyValue) as IValidationBuilder<T>;
+            var builder = CreateGenericValidationBuilder(new[] { typeof(T), propertyType }, containerName, propertyValue);
 
             if (ValidationBuilders.Any(x => x.GetChainName() == containerName))
             {
@@ -64,11 +64,11 @@ namespace NValidator
             }
         }
 
-        private static object CreateGenericInternalValidationBuilder(Type[] types, params object[] constructorParams)
+        protected virtual IValidationBuilder<T> CreateGenericValidationBuilder(Type[] types, params object[] constructorParams)
         {
             var internalValidationBuilderType = typeof(InternalValidationBuilder<,>);
             Type generic = internalValidationBuilderType.MakeGenericType(types);
-            return Activator.CreateInstance(generic, constructorParams);
+            return Activator.CreateInstance(generic, constructorParams) as IValidationBuilder<T>;
         }
     }
 
