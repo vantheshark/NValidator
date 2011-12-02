@@ -162,15 +162,36 @@ namespace NValidator
         public static IFluentValidationBuilder<T, TProperty> WithMessage<T, TProperty>(this IPostInitFluentValidationBuilder<T, TProperty> validationBuilder, string message)
         {
             var newValidator = new EventValidator<TProperty>(validationBuilder.ToBuilder().Previous.Validator);
-            newValidator.AfterValidation = x =>
+            newValidator.AfterValidation = (x, results) =>
             {
-                if (x != null && x.Count() == 1)
+                if (results != null && results.Count() == 1)
                 {
-                    var item = x.First();
+                    var item = results.First();
                     item.Message = message;
                     return new[] { item };
                 }
-                return x;
+                return results;
+            };
+            validationBuilder.ToBuilder().Previous.Validator = newValidator;
+            return validationBuilder;
+        }
+
+        /// <summary>
+        /// Override the error message of the first validation result if the results has only 1 item. Otherwise, it returs the original result set.
+        /// <para>It makes sense only if the validator produces only 1 error message such as NotNullValidator.</para>
+        /// </summary>
+        public static IFluentValidationBuilder<T, TProperty> WithMessage<T, TProperty>(this IPostInitFluentValidationBuilder<T, TProperty> validationBuilder, Func<T, string> message) where T : class
+        {
+            var newValidator = new EventValidator<T, TProperty>(validationBuilder.ToBuilder().Previous.Validator);
+            newValidator.AfterValidation = (x, results) =>
+            {
+                if (results != null && results.Count() == 1)
+                {
+                    var item = results.First();
+                    item.Message = message(x);
+                    return new[] { item };
+                }
+                return results;
             };
             validationBuilder.ToBuilder().Previous.Validator = newValidator;
             return validationBuilder;

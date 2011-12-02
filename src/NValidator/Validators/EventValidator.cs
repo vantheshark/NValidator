@@ -3,15 +3,15 @@ using System.Collections.Generic;
 
 namespace NValidator.Validators
 {
-    public sealed class EventValidator<T> : BaseValidator<T>, INegatableValidator<T>, IHaveContainer
+    public class EventValidator<T> : BaseValidator<T>, INegatableValidator<T>, IHaveContainer
     {
-        private readonly IValidator _originalValidator;
-        public Action<object, ValidationContext> BeforeValidation { get; set; }
-        public Func<IEnumerable<ValidationResult>, IEnumerable<ValidationResult>> AfterValidation { get; set; }
+        protected readonly IValidator OriginalValidator;
+        public Action<T, ValidationContext> BeforeValidation { get; set; }
+        public Func<T, IEnumerable<ValidationResult>, IEnumerable<ValidationResult>> AfterValidation { get; set; }
 
         public EventValidator(IValidator originalValidator)
         {
-            _originalValidator = originalValidator;
+            OriginalValidator = originalValidator;
         }
 
         public override IEnumerable<ValidationResult> GetValidationResult(T value, ValidationContext validationContext)
@@ -20,41 +20,66 @@ namespace NValidator.Validators
             {
                 BeforeValidation(value, validationContext);
             }
-            var results = _originalValidator.GetValidationResult(value, validationContext);
+            var results = OriginalValidator.GetValidationResult(value, validationContext);
 
             if (AfterValidation != null)
             {
-                return AfterValidation(results);
+                return AfterValidation(value, results);
             }
             return results;
         }
 
         public IEnumerable<ValidationResult> GetErrors(T value, ValidationContext validationContext)
         {
-            if (_originalValidator is INegatableValidator<T>)
+            if (OriginalValidator is INegatableValidator<T>)
             {
-                return ((INegatableValidator<T>)_originalValidator).GetErrors(value, validationContext);
+                return ((INegatableValidator<T>)OriginalValidator).GetErrors(value, validationContext);
             }
-            throw new Exception(string.Format("{0} is not INegatableValidator", _originalValidator.GetType().Name));
+            throw new Exception(string.Format("{0} is not INegatableValidator", OriginalValidator.GetType().Name));
         }
 
         public IEnumerable<ValidationResult> GetNegatableErrors(T value, ValidationContext validationContext)
         {
-            if (_originalValidator is INegatableValidator<T>)
+            if (OriginalValidator is INegatableValidator<T>)
             {
-                return ((INegatableValidator<T>)_originalValidator).GetNegatableErrors(value, validationContext);
+                return ((INegatableValidator<T>)OriginalValidator).GetNegatableErrors(value, validationContext);
             }
-            throw new Exception(string.Format("{0} is not INegatableValidator", _originalValidator.GetType().Name));
+            throw new Exception(string.Format("{0} is not INegatableValidator", OriginalValidator.GetType().Name));
         }
 
         public string ContainerName
         {
-            get { return _originalValidator.TryGetContainerName(); }
+            get { return OriginalValidator.TryGetContainerName(); }
         }
 
         public void UpdateContainerName(string containerName)
         {
-            _originalValidator.TryUpdateContainerName(containerName);
+            OriginalValidator.TryUpdateContainerName(containerName);
+        }
+    }
+
+    public class EventValidator<T, TProperty> : EventValidator<TProperty> where T : class 
+    {
+        public new Action<T, TProperty, ValidationContext> BeforeValidation { get; set; }
+        public new Func<T, IEnumerable<ValidationResult>, IEnumerable<ValidationResult>> AfterValidation { get; set; }
+
+        public EventValidator(IValidator originalValidator) : base(originalValidator)
+        {
+        }
+
+        public override IEnumerable<ValidationResult> GetValidationResult(TProperty value, ValidationContext validationContext)
+        {
+            if (BeforeValidation != null)
+            {
+                BeforeValidation(validationContext.ContainerInstance as T, value, validationContext);
+            }
+            var results = OriginalValidator.GetValidationResult(value, validationContext);
+
+            if (AfterValidation != null)
+            {
+                return AfterValidation(validationContext.ContainerInstance as T, results);
+            }
+            return results;
         }
     }
 }
