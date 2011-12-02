@@ -24,7 +24,7 @@ namespace NValidator.Validators
         public override IEnumerable<ValidationResult> GetNegatableErrors(T value, ValidationContext validationContext)
         {
             var values = String.Join(", ", _allowedValues);
-            yield return new FormatableMessageResult(new Dictionary<string, object> { { "@ProhibitValues", values } }) { Message = "@PropertyName must not be one of the following values: @ProhibitValues." };
+            yield return new FormattableMessageResult(new Dictionary<string, object> { { "@ProhibitValues", values } }) { Message = "@PropertyName must not be one of the following values: @ProhibitValues." };
         }
 
         public sealed override bool IsValid(T value, ValidationContext validationContext)
@@ -35,7 +35,7 @@ namespace NValidator.Validators
         public override IEnumerable<ValidationResult> GetErrors(T value, ValidationContext validationContext)
         {
             var values = String.Join(", ", _allowedValues);
-            yield return new FormatableMessageResult(new Dictionary<string, object> { { "@AllowedValues", values } }) { Message = "@PropertyName must be one of the allowed values. Allowed values: @AllowedValues." };
+            yield return new FormattableMessageResult(new Dictionary<string, object> { { "@AllowedValues", values } }) { Message = "@PropertyName must be one of the allowed values. Allowed values: @AllowedValues." };
         }
     }
 }

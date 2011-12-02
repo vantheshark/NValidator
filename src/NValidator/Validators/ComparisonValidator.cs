@@ -60,7 +60,7 @@ namespace NValidator.Validators
 
         public virtual IEnumerable<ValidationResult> GetErrors(TProperty value, ValidationContext validationContext)
         {
-            yield return new FormatableMessageResult(new Dictionary<string, object> { {"@ComparisonValue", _value}})
+            yield return new FormattableMessageResult(new Dictionary<string, object> { {"@ComparisonValue", _value}})
             {
                 Message = _messageFormat
             };
@@ -68,7 +68,7 @@ namespace NValidator.Validators
 
         public virtual IEnumerable<ValidationResult> GetNegatableErrors(TProperty value, ValidationContext validationContext)
         {
-            yield return new FormatableMessageResult(new Dictionary<string, object> { { "@ComparisonValue", _value } })
+            yield return new FormattableMessageResult(new Dictionary<string, object> { { "@ComparisonValue", _value } })
             {
                 Message = _negativeMessageFormat
             };

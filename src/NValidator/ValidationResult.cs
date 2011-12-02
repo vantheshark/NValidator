@@ -20,11 +20,11 @@ namespace NValidator
         public virtual string MemberName { get; set; }
     }
 
-    public sealed class FormatableMessageResult : ValidationResult
+    public class FormattableMessageResult : ValidationResult
     {
         private readonly Dictionary<string, object> _param;
 
-        public FormatableMessageResult(Dictionary<string, object> param)
+        public FormattableMessageResult(Dictionary<string, object> param)
         {
             if (param == null)
             {
@@ -36,7 +36,7 @@ namespace NValidator
         private string _messageFormat;
         private string _message;
 
-        public override string Message
+        public sealed override string Message
         {
             get
             {

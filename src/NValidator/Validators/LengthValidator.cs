@@ -37,7 +37,7 @@ namespace NValidator.Validators
             }
             else if (_minimumLength != 0)
             {
-                yield return new FormatableMessageResult(_paramResolver())
+                yield return new FormattableMessageResult(_paramResolver())
                 {
                     Message = defaultMessage
                 };
@@ -46,7 +46,7 @@ namespace NValidator.Validators
 
             if (_count < _minimumLength || _count > _maximumLength)
             {
-                yield return new FormatableMessageResult(_paramResolver())
+                yield return new FormattableMessageResult(_paramResolver())
                 {
                     Message = defaultMessage
                 };
