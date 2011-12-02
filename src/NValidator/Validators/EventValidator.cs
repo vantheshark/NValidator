@@ -11,6 +11,10 @@ namespace NValidator.Validators
 
         public EventValidator(IValidator originalValidator)
         {
+            if (originalValidator == null)
+            {
+                throw new ArgumentNullException("originalValidator");
+            }
             OriginalValidator = originalValidator;
         }
 

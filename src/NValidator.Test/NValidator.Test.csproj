@@ -60,6 +60,7 @@
     <Compile Include="OrderDetail.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SimpleTests.cs" />
+    <Compile Include="ValidatorExtensions\AllWithMessageTests.cs" />
     <Compile Include="ValidatorExtensions\NotTests.cs" />
     <Compile Include="ValidatorExtensions\StopOnFirstErrorTests.cs" />
     <Compile Include="ValidatorExtensions\MustBeEmailTests.cs" />
@@ -69,6 +70,7 @@
     <Compile Include="Validators\ConditionalValidatorTests.cs" />
     <Compile Include="Validators\CompositeValidatorTests.cs" />
     <Compile Include="ValidatorExtensions\MustTests.cs" />
+    <Compile Include="Validators\RegularExpressionValidatorTests.cs" />
     <Compile Include="Validators\DataAnnotationValidatorAdaptorTests.cs" />
     <Compile Include="Validators\GreaterThanOrEqualValidatorTests.cs" />
     <Compile Include="Validators\GreaterThanValidatorTests.cs" />

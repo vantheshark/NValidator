@@ -122,14 +122,14 @@ namespace NValidator
             return validationBuilder.ToBuilder().SetValidator(new PredicateValidator<T, TProperty>(predicate));
         }
 
-        public static IPostInitFluentValidationBuilder<T, string> Match<T>(this IPreInitFluentValidationBuilder<T, string> validationBuilder, string pattern)
+        public static IPostInitFluentValidationBuilder<T, string> Match<T>(this IPreInitFluentValidationBuilder<T, string> validationBuilder, string pattern, bool allowNull = true)
         {
-            return validationBuilder.ToBuilder().SetValidator(new RegularExpressionValidator(pattern));
+            return validationBuilder.ToBuilder().SetValidator(new RegularExpressionValidator(pattern, allowNull));
         }
 
         public static IPostInitFluentValidationBuilder<T, string> Email<T>(this IPreInitFluentValidationBuilder<T, string> validationBuilder)
         {
-            return validationBuilder.ToBuilder().SetValidator(new RegularExpressionValidator("^[_A-Za-z0-9-]+(\\.[_A-Za-z0-9-]+)*@[A-Za-z0-9]+(\\.[A-Za-z0-9]+)*(\\.[A-Za-z]{2,})$", "@PropertyName is not a valid email address."));
+            return validationBuilder.ToBuilder().SetValidator(new RegularExpressionValidator("^[_A-Za-z0-9-]+(\\.[_A-Za-z0-9-]+)*@[A-Za-z0-9]+(\\.[A-Za-z0-9]+)*(\\.[A-Za-z]{2,})$", false, "@PropertyName is not a valid email address."));
         }
 
         public static IPostInitFluentValidationBuilder<T, TProperty> ValidateUsing<T, TProperty>(this IFluentValidationBuilder<T, TProperty> validationBuilder, Type valiationAttributeType)
@@ -182,19 +182,64 @@ namespace NValidator
         /// </summary>
         public static IFluentValidationBuilder<T, TProperty> WithMessage<T, TProperty>(this IPostInitFluentValidationBuilder<T, TProperty> validationBuilder, Func<T, string> message) where T : class
         {
-            var newValidator = new EventValidator<T, TProperty>(validationBuilder.ToBuilder().Previous.Validator);
-            newValidator.AfterValidation = (x, results) =>
+            UpdateValidatorToReturnCustomMessage<T, TProperty>(validationBuilder.ToBuilder().Previous, message);
+            return validationBuilder;
+        }
+
+        /// <summary>
+        /// Override the error message of the validation result for all rules in the chain if the results has only 1 item. Otherwise, it returs the original result set.
+        /// <para>It makes sense only if the validators for current chain always produce only 1 error message such as NotNullValidator.</para>
+        /// </summary>
+        public static void AllWithMessage<T, TProperty>(this IPostInitFluentValidationBuilder<T, TProperty> validationBuilder, Func<T, string> message) where T : class
+        {
+            var originalBuilder = validationBuilder.ToBuilder() as IValidationBuilder<T>;
+            Action<IValidationBuilder<T>> updateValidators = builder => UpdateValidatorToReturnCustomMessage<T, TProperty>(builder, message);
+            UpdateBuilderChain(originalBuilder, updateValidators);
+        }
+
+        private static void UpdateValidatorToReturnCustomMessage<T, TProperty>(IValidationBuilder<T> builder, Func<T, string> message) where T : class
+        {
+            var newValidator = new EventValidator<T, TProperty>(builder.Validator);
+            newValidator.AfterValidation = (o, vResults) =>
             {
-                if (results != null && results.Count() == 1)
+                if (vResults != null && vResults.Count() == 1)
                 {
-                    var item = results.First();
-                    item.Message = message(x);
+                    var item = vResults.First();
+                    item.Message = message(o);
                     return new[] { item };
                 }
-                return results;
+                return vResults;
             };
-            validationBuilder.ToBuilder().Previous.Validator = newValidator;
-            return validationBuilder;
+            builder.Validator = newValidator;
+        }
+
+        /// <summary>
+        /// Updates BeforeValidation for all the builders in current chain by executing provided action
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="lastBuilder">The last builder.</param>
+        /// <param name="action">The action.</param>
+        public static void UpdateBuilderChain<T>(IValidationBuilder<T> lastBuilder, Action<IValidationBuilder<T>> action)
+        {
+            Action<IValidationBuilder<T>> updateBuilder = x =>
+            {
+                var originValue = x.BeforeValidation;
+                x.BeforeValidation = (builder, context) =>
+                {
+                    if (originValue != null)
+                    {
+                        originValue(builder, context);
+                    }
+                    action(x);
+                };
+            };
+
+            var pointer = lastBuilder;
+            while (pointer != null)
+            {
+                updateBuilder(pointer);
+                pointer = pointer.Previous;
+            }
         }
 
         /// <summary>

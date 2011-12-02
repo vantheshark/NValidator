@@ -128,7 +128,7 @@ namespace NValidator.Builders
                 AfterValidation = AfterValidation,
                 StopChainOnError = StopChainOnError,
                 Previous = this,
-                Validator = null,
+                Validator = ValidatorFactory.NullValidator,
                 Next = null
             };
 
