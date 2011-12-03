@@ -62,6 +62,50 @@ namespace NValidator.Test.Builders
             // Assert
             Assert.That(name, Is.EqualTo("The.Order"));
         }
+
+        [Test]
+        public void GetChainFromExpression_should_return_a_chain()
+        {
+            // Arrange
+            var builder = new ValidationBuilder<Order, string>(x => x.OrderDetails[0].ProductCode);
+            builder.UpdateContainerName("The.Order");
+
+            // Action
+            var name = builder.ChainName;
+
+            // Assert
+            Assert.That(name, Is.EqualTo("The.Order.OrderDetails[0].ProductCode"));
+        }
+
+        [Test]
+        public void GetChainFromExpression_should_return_a_container_if_expression_type_is_not_member_access()
+        {
+            // Arrange
+            var builder = new ValidationBuilder<Order, string>(x => "Not A Member Access Expression");
+            builder.UpdateContainerName("The.Order.OrderDetails[0].Id");
+
+            // Action
+            var name = builder.ChainName;
+
+            // Assert
+            Assert.That(name, Is.EqualTo("The.Order.OrderDetails[0].Id"));
+        }
+
+        [Test]
+        public void GetChainFromExpression_should_return_a_chain_with_a_container_as_prefix()
+        {
+            // Arrange
+            var builder = new ValidationBuilder<Order, string>(x => x.OrderDetails[0].ProductCode);
+            builder.UpdateContainerName("Container");
+
+            // Action
+            var name = builder.ChainName;
+
+            // Assert
+            Assert.That(name, Is.EqualTo("Container.OrderDetails[0].ProductCode"));
+        }
+
+        
     }
 }
 // ReSharper restore InconsistentNaming
