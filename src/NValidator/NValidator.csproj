@@ -32,6 +32,7 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Microsoft.CSharp" />
     <Reference Include="System" />
     <Reference Include="System.ComponentModel.DataAnnotations" />
     <Reference Include="System.Core" />
@@ -49,6 +50,7 @@
     <Compile Include="Builders\IValidationBuilder`2.cs" />
     <Compile Include="Builders\NegativeValidationBuilder`2.cs" />
     <Compile Include="Builders\IValidationBuilder`1.cs" />
+    <Compile Include="Builders\ValidationBuilderHelpers.cs" />
     <Compile Include="CompositeValidator`1.cs" />
     <Compile Include="DefaultValidatorFactory.cs" />
     <Compile Include="IHaveContainer.cs" />

@@ -39,7 +39,7 @@ namespace NValidator
             {
                 return;
             }
-            var builder = CreateGenericValidationBuilder(new[] { typeof(T), propertyType }, containerName, propertyValue);
+            var builder = CreateGenericBuilder(propertyType, propertyValue);
 
             if (ValidationBuilders.Any(x => x.ChainName == containerName))
             {
@@ -49,35 +49,18 @@ namespace NValidator
 
             var validator = ValidatorFactory.Current.GetValidatorFor(propertyType);
 
-            if (builder != null && 
-                validator != null && 
+            if (builder != null && validator != null && 
                 ValidatorFactory.Current.IsDefaultValidator(validator.GetType())) /* Make sure current validator factory works as expected */
             {
-                // NOTE: Should not update container name here because a validator can be shared across builders
-                // Indeed, we should update container name right before perform validation on validator
-                //if (valiator is IHaveContainer)
-                //{
-                //    (valiator as IHaveContainer).UpdateContainerName(containerName);
-                //}
+                builder.UpdateContainerName(containerName);
                 builder.Validator = validator;
                 ValidationBuilders.Add(builder);
             }
         }
 
-        protected virtual IValidationBuilder<T> CreateGenericValidationBuilder(Type[] types, params object[] constructorParams)
+        protected virtual IValidationBuilder<T> CreateGenericBuilder(Type propertyType, object propertyValue)
         {
-            var internalValidationBuilderType = typeof(InternalValidationBuilder<,>);
-            Type generic = internalValidationBuilderType.MakeGenericType(types);
-            return Activator.CreateInstance(generic, constructorParams) as IValidationBuilder<T>;
-        }
-    }
-
-    internal class InternalValidationBuilder<TType, TProperty> : ValidationBuilder<TType, TProperty>
-    {
-        public InternalValidationBuilder(string prefix, object propertyValue)
-            : base(x => (TProperty)propertyValue)
-        {
-            ContainerName = prefix;
+            return ValidationBuilderHelpers.CreateGenericBuilder<T>(propertyType, propertyValue, DefaultBuilderType);
         }
     }
 }

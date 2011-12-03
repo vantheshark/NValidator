@@ -8,7 +8,7 @@ namespace NValidator.Builders
     public class ValidationBuilder<T, TProperty> : IValidationBuilder<T, TProperty>
     {
         public IValidationBuilder<T> Next { get; set; }
-        public IValidationBuilder<T> Previous { get; protected set; }
+        public IValidationBuilder<T> Previous { get; set; }
         public bool StopChainOnError { get; set; }
 
         private string _chainName;
@@ -37,10 +37,17 @@ namespace NValidator.Builders
             { 
                 _containerName = value;
                 _chainName = null;
+                PropertyValue = null;
             }
         }
         public Action<IValidationBuilder<T>, ValidationContext> BeforeValidation { get; set; }
         public Func<IValidationBuilder<T>, IEnumerable<ValidationResult>, IEnumerable<ValidationResult>> AfterValidation { get; set; }
+
+
+        public ValidationBuilder(object propertyValue)
+        {
+            PropertyValue = propertyValue;
+        }
 
         public ValidationBuilder(Expression<Func<T, TProperty>> expression)
         {
@@ -52,11 +59,17 @@ namespace NValidator.Builders
             ContainerName = containerName;
         }
 
+        internal object PropertyValue { get; set; }
         protected virtual object GetObjectToValidate(T value)
         {
             try
             {
-                return Expression.Compile()(value);
+                if (PropertyValue == null)
+                {
+                    PropertyValue = Expression.Compile()(value);
+                    
+                }
+                return PropertyValue;
             }
             catch
             {
@@ -67,7 +80,7 @@ namespace NValidator.Builders
         private string GetChainName()
         {
             var ex = Expression;
-            if (ex.NodeType == ExpressionType.Lambda &&
+            if (ex != null && ex.NodeType == ExpressionType.Lambda &&
                (ex.Body.NodeType == ExpressionType.MemberAccess || ex.Body.NodeType == ExpressionType.ArrayIndex))
             {
                 var parameter = ex.Parameters[0].ToString();
@@ -152,19 +165,16 @@ namespace NValidator.Builders
 
         public virtual object Clone()
         {
-            var builder = new ValidationBuilder<T, TProperty>(Expression)
-            {
-                ContainerName = ContainerName,
-                BeforeValidation = BeforeValidation,
-                AfterValidation = AfterValidation,
-                StopChainOnError = StopChainOnError,
-                Previous = this,
-                Validator = ValidatorFactory.NullValidator,
-                Next = null
-            };
+            var b = ValidationBuilderHelpers.CreateGenericBuilder(Expression, ValidatorFactory.DefaultValidationBuilderType);
+            b.UpdateContainerName(ContainerName);
+            b.BeforeValidation = BeforeValidation;
+            b.StopChainOnError = StopChainOnError;
+            b.Previous = this;
+            b.Validator = ValidatorFactory.NullValidator;
+            b.Next = null;
+            Next = b;
 
-            Next = builder;
-            return builder;
+            return b;
         }
     }
 }

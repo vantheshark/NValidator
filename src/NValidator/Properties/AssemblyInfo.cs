@@ -37,3 +37,4 @@ using System.Runtime.InteropServices;
 [assembly: InternalsVisibleTo("NValidator.Test")]
 [assembly: InternalsVisibleTo("Castle.DynamicProxy")]
 [assembly: InternalsVisibleTo("Moq")]
+//[assembly: InternalsVisibleTo("mscorlib")]

@@ -15,12 +15,20 @@ namespace NValidator
     public abstract class TypeValidator<T> : BaseValidator<T>, IHaveContainer
     {
         public string ContainerName { get; protected set; }
-
+        /// <summary>
+        /// Gets or sets the default type of the validation builder.
+        /// The default type can be set via ValidatorFactory.DefaultValidationBuilderType, default value is typeof(ValidationBuilder&lt;,&gt;) or set in the constructor
+        /// </summary>
+        /// <value>
+        /// The default type of the builder.
+        /// </value>
+        public Type DefaultBuilderType { get; set; }
         protected List<IValidationBuilder<T>> ValidationBuilders { get; set; }
 
         protected TypeValidator()
         {
             ValidationBuilders = new List<IValidationBuilder<T>>();
+            DefaultBuilderType = ValidatorFactory.DefaultValidationBuilderType;
         }
 
         public void UpdateContainerName(string containerName)
@@ -37,7 +45,8 @@ namespace NValidator
 
         public IFluentValidationBuilder<T, TProperty> RuleFor<TProperty>(Expression<Func<T, TProperty>> expression)
         {
-            var newBuilder = CreateBuilder(expression);
+            var newBuilder = CreateGenericBuilder(expression);
+            newBuilder.UpdateContainerName(ContainerName);
             ValidationBuilders.Add(newBuilder);
             return newBuilder;
         }
@@ -87,11 +96,9 @@ namespace NValidator
             }
         }
 
-        protected virtual IValidationBuilder<T, TProperty> CreateBuilder<TProperty>(Expression<Func<T, TProperty>> expression)
+        protected virtual IValidationBuilder<T, TProperty> CreateGenericBuilder<TProperty>(Expression<Func<T, TProperty>> expression)
         {
-            var builderWithoutValidator = new ValidationBuilder<T, TProperty>(expression);
-            builderWithoutValidator.UpdateContainerName(ContainerName);
-            return builderWithoutValidator;
+            return ValidationBuilderHelpers.CreateGenericBuilder(expression, DefaultBuilderType);
         }
     }
 }

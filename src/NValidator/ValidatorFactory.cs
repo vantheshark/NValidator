@@ -1,4 +1,5 @@
 ﻿using System;
+using NValidator.Builders;
 using NValidator.Validators;
 
 namespace NValidator
@@ -89,10 +90,13 @@ namespace NValidator
         {
             Current = new DefaultValidatorFactory();
             NullValidator = new DoNothingValidator();
+            DefaultValidationBuilderType = typeof (ValidationBuilder<,>);
         }
 
         public static IValidator NullValidator { get; private set; }
 
         public static IValidatorFactory Current { get; set; }
+
+        public static Type DefaultValidationBuilderType { get; set; }
     }
 }
