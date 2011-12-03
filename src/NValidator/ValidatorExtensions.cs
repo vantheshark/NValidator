@@ -199,7 +199,7 @@ namespace NValidator
         {
             var originalBuilder = validationBuilder.ToBuilder() as IValidationBuilder<T>;
             Action<IValidationBuilder<T>> updateValidators = builder => UpdateValidatorToReturnCustomMessage<T, TProperty>(builder, message);
-            UpdateBuilderChain(originalBuilder, updateValidators);
+            ValidationBuilderHelpers.UpdateBuilderChain(originalBuilder, updateValidators);
         }
 
         private static void UpdateValidatorToReturnCustomMessage<T, TProperty>(IValidationBuilder<T> builder, Func<T, string> message) where T : class
@@ -216,35 +216,6 @@ namespace NValidator
                 return vResults;
             };
             builder.Validator = newValidator;
-        }
-
-        /// <summary>
-        /// Updates BeforeValidation for all the builders in current chain by executing provided action
-        /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <param name="lastBuilder">The last builder.</param>
-        /// <param name="action">The action.</param>
-        public static void UpdateBuilderChain<T>(IValidationBuilder<T> lastBuilder, Action<IValidationBuilder<T>> action)
-        {
-            Action<IValidationBuilder<T>> updateBuilder = x =>
-            {
-                var originValue = x.BeforeValidation;
-                x.BeforeValidation = (builder, context) =>
-                {
-                    if (originValue != null)
-                    {
-                        originValue(builder, context);
-                    }
-                    action(x);
-                };
-            };
-
-            var pointer = lastBuilder;
-            while (pointer != null)
-            {
-                updateBuilder(pointer);
-                pointer = pointer.Previous;
-            }
         }
 
         /// <summary>

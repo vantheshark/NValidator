@@ -60,7 +60,7 @@
     <Compile Include="OrderDetail.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SimpleTests.cs" />
-    <Compile Include="ValidationBuilderTests.cs" />
+    <Compile Include="Builders\ValidationBuilderTests.cs" />
     <Compile Include="ValidatorExtensions\AllWithMessageTests.cs" />
     <Compile Include="ValidatorExtensions\ForEachTests.cs" />
     <Compile Include="ValidatorExtensions\NotTests.cs" />

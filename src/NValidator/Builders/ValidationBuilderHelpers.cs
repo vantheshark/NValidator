@@ -3,7 +3,7 @@ using System.Linq.Expressions;
 
 namespace NValidator.Builders
 {
-    internal class ValidationBuilderHelpers
+    public class ValidationBuilderHelpers
     {
         internal static IValidationBuilder<T, TProperty> CreateGenericBuilder<T, TProperty>(Expression<Func<T, TProperty>> expression, Type defaultBuilderType)
         {
@@ -47,6 +47,35 @@ namespace NValidator.Builders
             }
 
             throw new Exception("Invalid default validation builder type.");
+        }
+
+        /// <summary>
+        /// Updates BeforeValidation for all the builders in current chain by executing provided action
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="lastBuilder">The last builder.</param>
+        /// <param name="action">The action.</param>
+        public static void UpdateBuilderChain<T>(IValidationBuilder<T> lastBuilder, Action<IValidationBuilder<T>> action)
+        {
+            Action<IValidationBuilder<T>> updateBuilder = x =>
+            {
+                var originValue = x.BeforeValidation;
+                x.BeforeValidation = (builder, context) =>
+                {
+                    if (originValue != null)
+                    {
+                        originValue(builder, context);
+                    }
+                    action(x);
+                };
+            };
+
+            var pointer = lastBuilder;
+            while (pointer != null)
+            {
+                updateBuilder(pointer);
+                pointer = pointer.Previous;
+            }
         }
     }
 }

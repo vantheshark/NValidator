@@ -18,7 +18,7 @@ namespace NValidator.Builders
             {
                 if (_chainName == null)
                 {
-                    _chainName = GetChainName() ?? ContainerName;
+                    _chainName = GetChainFromExpression() ?? ContainerName;
                 }
                 return _chainName;
             }
@@ -37,18 +37,11 @@ namespace NValidator.Builders
             { 
                 _containerName = value;
                 _chainName = null;
-                PropertyValue = null;
             }
         }
         public Action<IValidationBuilder<T>, ValidationContext> BeforeValidation { get; set; }
         public Func<IValidationBuilder<T>, IEnumerable<ValidationResult>, IEnumerable<ValidationResult>> AfterValidation { get; set; }
-
-
-        public ValidationBuilder(object propertyValue)
-        {
-            PropertyValue = propertyValue;
-        }
-
+        
         public ValidationBuilder(Expression<Func<T, TProperty>> expression)
         {
             Expression = expression;
@@ -59,17 +52,11 @@ namespace NValidator.Builders
             ContainerName = containerName;
         }
 
-        internal object PropertyValue { get; set; }
         protected virtual object GetObjectToValidate(T value)
         {
             try
             {
-                if (PropertyValue == null)
-                {
-                    PropertyValue = Expression.Compile()(value);
-                    
-                }
-                return PropertyValue;
+                return Expression.Compile()(value);
             }
             catch
             {
@@ -77,7 +64,7 @@ namespace NValidator.Builders
             }
         }
 
-        private string GetChainName()
+        private string GetChainFromExpression()
         {
             var ex = Expression;
             if (ex != null && ex.NodeType == ExpressionType.Lambda &&
@@ -102,6 +89,12 @@ namespace NValidator.Builders
         }
 
         public virtual IValidationBuilder<T, TProperty> SetValidator(IValidator<TProperty> validator)
+        {
+            Validator = validator;
+            return (IValidationBuilder<T, TProperty>)Clone();
+        }
+
+        public virtual IValidationBuilder<T> SetValidator(IValidator validator)
         {
             Validator = validator;
             return (IValidationBuilder<T, TProperty>)Clone();
@@ -155,12 +148,6 @@ namespace NValidator.Builders
             }
             result.Message = result.Message.Replace("@PropertyName", result.PropertyName);
             return result;
-        }
-
-        public virtual IValidationBuilder<T> SetValidator(IValidator validator)
-        {
-            Validator = validator;
-            return (IValidationBuilder<T, TProperty>)Clone();
         }
 
         public virtual object Clone()

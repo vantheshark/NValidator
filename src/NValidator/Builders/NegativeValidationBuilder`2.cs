@@ -49,19 +49,19 @@ namespace NValidator.Builders
             public override IEnumerable<ValidationResult> GetErrors(TPropertyType value, ValidationContext validationContext)
             {
                 CheckOriginalValidator();
-                return (OriginalValidator).GetNegatableErrors(value, validationContext);
+                return OriginalValidator.GetNegatableErrors(value, validationContext);
             }
 
             public override IEnumerable<ValidationResult> GetNegatableErrors(TPropertyType value, ValidationContext validationContext)
             {
                 CheckOriginalValidator();
-                return (OriginalValidator).GetErrors(value, validationContext);
+                return OriginalValidator.GetErrors(value, validationContext);
             }
 
             public override bool IsValid(TPropertyType value, ValidationContext validationContext)
             {
                 CheckOriginalValidator();
-                return !(OriginalValidator).IsValid(value, validationContext);
+                return !OriginalValidator.IsValid(value, validationContext);
             }
 
             public string ContainerName
