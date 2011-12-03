@@ -10,9 +10,35 @@ namespace NValidator.Builders
         public IValidationBuilder<T> Next { get; set; }
         public IValidationBuilder<T> Previous { get; protected set; }
         public bool StopChainOnError { get; set; }
+
+        private string _chainName;
+        public virtual string ChainName
+        {
+            get
+            {
+                if (_chainName == null)
+                {
+                    _chainName = GetChainName() ?? ContainerName;
+                }
+                return _chainName;
+            }
+            set { _chainName = value; }
+        }
+
         public Expression<Func<T, TProperty>> Expression { get; set; }
         public IValidator Validator { get; set; }
-        public string ContainerName { get; protected set; }
+        private string _containerName;
+        public string ContainerName { 
+            get
+            {
+                return _containerName;
+            } 
+            protected set 
+            { 
+                _containerName = value;
+                _chainName = null;
+            }
+        }
         public Action<IValidationBuilder<T>, ValidationContext> BeforeValidation { get; set; }
         public Func<IValidationBuilder<T>, IEnumerable<ValidationResult>, IEnumerable<ValidationResult>> AfterValidation { get; set; }
 
@@ -38,7 +64,7 @@ namespace NValidator.Builders
             }
         }
 
-        public virtual string GetChainName()
+        private string GetChainName()
         {
             var ex = Expression;
             if (ex.NodeType == ExpressionType.Lambda &&
@@ -70,12 +96,17 @@ namespace NValidator.Builders
 
         public IEnumerable<ValidationResult> Validate(T containerObject, ValidationContext validationContext)
         {
+            return InternalValidate(containerObject, validationContext);
+        }
+
+        protected internal virtual IEnumerable<ValidationResult> InternalValidate(T containerObject, ValidationContext validationContext)
+        {
             if (BeforeValidation != null)
             {
                 BeforeValidation(this, validationContext);
             }
 
-            var propertyChain = GetChainName() ?? ContainerName;
+            var propertyChain = ChainName ?? ContainerName;
 
             if (Validator == null || validationContext.ShouldIgnore(propertyChain))
             {

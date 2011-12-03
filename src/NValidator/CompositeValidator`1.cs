@@ -41,7 +41,7 @@ namespace NValidator
             }
             var builder = CreateGenericValidationBuilder(new[] { typeof(T), propertyType }, containerName, propertyValue);
 
-            if (ValidationBuilders.Any(x => x.GetChainName() == containerName))
+            if (ValidationBuilders.Any(x => x.ChainName == containerName))
             {
                 // NOTE: Stop here because there is an existing validator manually set on that property
                 return;

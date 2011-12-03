@@ -6,6 +6,6 @@ namespace NValidator.Builders
         IValidationBuilder<T> Next { get; set; }
         IValidationBuilder<T> Previous { get; }
         bool StopChainOnError { get; set; }
-        string GetChainName();
+        string ChainName { get; set; }
     }
 }

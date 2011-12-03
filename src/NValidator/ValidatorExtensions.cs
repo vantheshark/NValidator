@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Linq.Expressions;
 using NValidator.Builders;
@@ -134,6 +135,10 @@ namespace NValidator
 
         public static IPostInitFluentValidationBuilder<T, TProperty> ValidateUsing<T, TProperty>(this IFluentValidationBuilder<T, TProperty> validationBuilder, Type valiationAttributeType)
         {
+            if (!valiationAttributeType.Is<ValidationAttribute>())
+            {
+                throw new NotSupportedException("The provided Type must be a type of ValidationAttribute.");
+            }
             return (IPostInitFluentValidationBuilder<T, TProperty>)validationBuilder.ToBuilder().SetValidator(new DataAnnotationValidatorAdaptor(valiationAttributeType));
         }
 
@@ -146,8 +151,8 @@ namespace NValidator
                 {
                     context = new ValidationContext();
                 }
-                var memberName = x.GetChainName() ?? x.ContainerName;
-                var ignoredList = (List<string>) context.Items[ValidationContext.IgnoredMembers];
+                var memberName = x.ChainName ?? x.ContainerName;
+                var ignoredList = (List<string>)context.Items[ValidationContext.IgnoredMembers];
                 if (!ignoredList.Contains(memberName))
                 {
                     ignoredList.Add(memberName);
@@ -156,8 +161,8 @@ namespace NValidator
         }
 
         /// <summary>
-        /// Override the error message of the first validation result if the results has only 1 item. Otherwise, it returs the original result set.
-        /// <para>It makes sense only if the validator produces only 1 error message such as NotNullValidator.</para>
+        /// Override the error message of the first validation result if the results has only 1 item. Otherwise, it returns the original result set.
+        /// <para>It makes sense only if the validator produces only 1 error message such as NotNullValidator, NotEmptyValidator, PredicateValidator, etc.</para>
         /// </summary>
         public static IFluentValidationBuilder<T, TProperty> WithMessage<T, TProperty>(this IPostInitFluentValidationBuilder<T, TProperty> validationBuilder, string message)
         {
@@ -177,8 +182,8 @@ namespace NValidator
         }
 
         /// <summary>
-        /// Override the error message of the first validation result if the results has only 1 item. Otherwise, it returs the original result set.
-        /// <para>It makes sense only if the validator produces only 1 error message such as NotNullValidator.</para>
+        /// Override the error message of the first validation result if the results has only 1 item. Otherwise, it returns the original result set.
+        /// <para>It makes sense only if the validator produces only 1 error message such as NotNullValidator, NotEmptyValidator, PredicateValidator, etc.</para>
         /// </summary>
         public static IFluentValidationBuilder<T, TProperty> WithMessage<T, TProperty>(this IPostInitFluentValidationBuilder<T, TProperty> validationBuilder, Func<T, string> message) where T : class
         {
@@ -187,8 +192,8 @@ namespace NValidator
         }
 
         /// <summary>
-        /// Override the error message of the validation result for all rules in the chain if the results has only 1 item. Otherwise, it returs the original result set.
-        /// <para>It makes sense only if the validators for current chain always produce only 1 error message such as NotNullValidator.</para>
+        /// Override the error message of the validation result for all rules in the chain if the result set has only 1 item. Otherwise, it returns the original result set.
+        /// <para>It makes sense only if the validators for current chain always produce only 1 error message such as NotNullValidator, NotEmptyValidator, PredicateValidator, etc.</para>
         /// </summary>
         public static void AllWithMessage<T, TProperty>(this IPostInitFluentValidationBuilder<T, TProperty> validationBuilder, Func<T, string> message) where T : class
         {
@@ -256,6 +261,20 @@ namespace NValidator
             var originalBuilder = validationBuilder.ToBuilder();
             originalBuilder.SetValidator(ValidatorFactory.NullValidator);
             return new NegativeValidationBuilder<T, TProperty>(originalBuilder);
+        }
+
+        public static void ForEach<T, TItem>(this IFluentValidationBuilder<T, TItem[]> validationBuilder, Action<TypeValidator<TItem>> rules)
+        {
+            var originalBuilder = validationBuilder.ToBuilder();
+            var compositeBuilder = new CompositeValidationBuilder<T, TItem[], TItem>(originalBuilder);
+            rules((TypeValidator<TItem>) compositeBuilder.Validator);
+        }
+
+        public static void ForEach<T, TItem>(this IFluentValidationBuilder<T, IEnumerable<TItem>> validationBuilder, Action<TypeValidator<TItem>> rules)
+        {
+            var originalBuilder = validationBuilder.ToBuilder();
+            var compositeBuilder = new CompositeValidationBuilder<T, IEnumerable<TItem>, TItem>(originalBuilder);
+            rules((TypeValidator<TItem>)compositeBuilder.Validator);
         }
 
         public static string TryGetContainerName(this IValidator validator)
