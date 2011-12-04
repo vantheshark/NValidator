@@ -241,6 +241,8 @@ namespace NValidator
             rules((TypeValidator<TItem>) compositeBuilder.Validator);
         }
 
+
+
         public static void ForEach<T, TItem>(this IFluentValidationBuilder<T, IEnumerable<TItem>> validationBuilder, Action<TypeValidator<TItem>> rules)
         {
             var originalBuilder = validationBuilder.ToBuilder();

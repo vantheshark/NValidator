@@ -44,6 +44,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Builders\EnumerableAdapterValidationBuilder`2.cs" />
     <Compile Include="Builders\CompositeValidationBuilder`2.cs" />
     <Compile Include="Builders\IChainOfValidationBuilder`1.cs" />
     <Compile Include="Builders\IFluentValidationBuilder`2.cs" />

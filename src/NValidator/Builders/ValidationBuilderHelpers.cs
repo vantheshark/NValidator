@@ -8,7 +8,7 @@ namespace NValidator.Builders
         internal static IValidationBuilder<T, TProperty> CreateGenericBuilder<T, TProperty>(Expression<Func<T, TProperty>> expression, Type defaultBuilderType)
         {
             IValidationBuilder<T, TProperty> newBuilder = null;
-            if (defaultBuilderType == typeof(ValidationBuilder<,>) || defaultBuilderType == null)
+            if (defaultBuilderType == null || defaultBuilderType.GetGenericTypeDefinition() == typeof(ValidationBuilder<,>))
             {
                 newBuilder = new ValidationBuilder<T, TProperty>(expression);
             }
@@ -53,9 +53,10 @@ namespace NValidator.Builders
         /// Updates BeforeValidation for all the builders in current chain by executing provided action
         /// </summary>
         /// <typeparam name="T"></typeparam>
-        /// <param name="lastBuilder">The last builder.</param>
+        /// <param name="currentBuilder">The last builder.</param>
         /// <param name="action">The action.</param>
-        public static void UpdateBuilderChain<T>(IValidationBuilder<T> lastBuilder, Action<IValidationBuilder<T>> action)
+        /// <param name="leftToRight">if set to <c>true</c> [left to right].</param>
+        public static void UpdateBuilderChain<T>(IValidationBuilder<T> currentBuilder, Action<IValidationBuilder<T>> action, bool leftToRight = false)
         {
             Action<IValidationBuilder<T>> updateBuilder = x =>
             {
@@ -70,12 +71,86 @@ namespace NValidator.Builders
                 };
             };
 
-            var pointer = lastBuilder;
+            var pointer = currentBuilder;
             while (pointer != null)
             {
                 updateBuilder(pointer);
-                pointer = pointer.Previous;
+                pointer = GetNextBuilder(pointer, leftToRight);
             }
+        }
+
+        public static void UpdateBuilderChain<T, TProperty>(IValidationBuilder<T, TProperty> currentBuilder, Action<IValidationBuilder<T, TProperty>> action, bool leftToRight = false)
+        {
+            Action<IValidationBuilder<T, TProperty>> updateBuilder = x =>
+            {
+                var originValue = x.BeforeValidation;
+                x.BeforeValidation = (builder, context) =>
+                {
+                    if (originValue != null)
+                    {
+                        originValue(builder, context);
+                    }
+                    action(x);
+                };
+            };
+
+            var pointer = currentBuilder;
+            while (pointer != null)
+            {
+                updateBuilder(pointer);
+                pointer = GetNextBuilder(pointer, leftToRight) as IValidationBuilder<T, TProperty>;
+            }
+        }
+
+        private static IValidationBuilder<T> GetNextBuilder<T>(IChainOfValidationBuilder<T> builder, bool leftToRight)
+        {
+            return leftToRight ? builder.Next : builder.Previous;
+        }
+
+        /// <summary>
+        /// Clones the chain begin from the provided builder
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <typeparam name="TProperty">The type of the property.</typeparam>
+        /// <param name="firstBuilder">The first builder.</param>
+        /// <param name="action">The action to execute on each cloned builder on the chain.</param>
+        /// <returns></returns>
+        public static IValidationBuilder<T, TProperty> CloneChain<T, TProperty>(IValidationBuilder<T, TProperty> firstBuilder, Action<IValidationBuilder<T, TProperty>> action = null)
+        {
+            IValidationBuilder<T, TProperty> newBeginingBuilder = CloneBuilderWithoutConnection(firstBuilder);
+            var pointer = firstBuilder.Next as IValidationBuilder<T, TProperty>;
+            var newBuilderPointer = newBeginingBuilder;
+            if (action != null)
+            {
+                action(newBeginingBuilder);
+            }
+            while (pointer != null)
+            {
+                var nextBuilder = CloneBuilderWithoutConnection(pointer);
+                newBuilderPointer.Next = nextBuilder;
+                nextBuilder.Previous = newBuilderPointer;
+                if (action != null)
+                {
+                    action(nextBuilder);
+                }
+
+                pointer = pointer.Next as IValidationBuilder<T, TProperty>;
+                newBuilderPointer = newBuilderPointer.Next as IValidationBuilder<T, TProperty>;
+            }
+
+            return newBeginingBuilder;
+        }
+
+        private static IValidationBuilder<T, TProperty> CloneBuilderWithoutConnection<T, TProperty>(IValidationBuilder<T, TProperty> builder)
+        {
+            IValidationBuilder<T, TProperty> newBuilder = CreateGenericBuilder(builder.Expression, builder.GetType());
+            newBuilder.AfterValidation = builder.AfterValidation;
+            newBuilder.BeforeValidation = builder.BeforeValidation;
+            newBuilder.ChainName = builder.ChainName;
+            newBuilder.StopChainOnError = builder.StopChainOnError;
+            newBuilder.Validator = builder.Validator;
+            newBuilder.UpdateContainerName(builder.ContainerName);
+            return newBuilder;
         }
     }
 }

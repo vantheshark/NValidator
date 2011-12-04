@@ -51,6 +51,15 @@ namespace NValidator
             return newBuilder;
         }
 
+        public IFluentValidationBuilder<T, TItem> RuleForEach<TItem>(Expression<Func<T, IEnumerable<TItem>>> expression)
+        {
+            var dummyBuilder = CreateGenericBuilder(expression);
+            dummyBuilder.UpdateContainerName(ContainerName);
+            var compositeBuilder = new EnumerableAdapterValidationBuilder<T, IEnumerable<TItem>, TItem>(dummyBuilder);
+            ValidationBuilders.Add(compositeBuilder);
+            return compositeBuilder.InternalBuilder;
+        }
+
         public sealed override IEnumerable<ValidationResult> GetValidationResult(T value, ValidationContext validationContext)
         {
             return InternalGetValidationResult(value, validationContext);

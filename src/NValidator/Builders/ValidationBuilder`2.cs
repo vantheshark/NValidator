@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Linq.Expressions;
 using NValidator.Validators;
 
@@ -105,25 +106,15 @@ namespace NValidator.Builders
             return InternalValidate(containerObject, validationContext);
         }
 
-        protected internal virtual IEnumerable<ValidationResult> InternalValidate(T containerObject, ValidationContext validationContext)
+        protected internal IEnumerable<ValidationResult> InternalValidate(T containerObject, ValidationContext validationContext)
         {
             if (BeforeValidation != null)
             {
                 BeforeValidation(this, validationContext);
             }
 
-            var propertyChain = ChainName ?? ContainerName;
-
-            if (Validator == null || validationContext.ShouldIgnore(propertyChain))
-            {
-                yield break;
-            }
-
-            // NOTE: THe validators can be cached so we need to update their's container name before validation
-            Validator.TryUpdateContainerName(propertyChain);
-
-            var value = GetObjectToValidate(containerObject);
-            var results = Validator.GetValidationResult(value, validationContext);
+            string propertyChain;
+            IEnumerable<ValidationResult> results = GetResults(validationContext, containerObject, out propertyChain);
 
             if (AfterValidation != null)
             {
@@ -137,6 +128,19 @@ namespace NValidator.Builders
                 }
                 yield return FormatValidationResult(modelValidationResult, propertyChain);
             }
+        }
+
+        internal protected virtual IEnumerable<ValidationResult> GetResults(ValidationContext validationContext, T containerObject, out string propertyChain)
+        {
+            propertyChain = ChainName ?? ContainerName;
+            if (Validator == null || validationContext.ShouldIgnore(propertyChain))
+            {
+                return Enumerable.Empty<ValidationResult>();
+            }
+            // NOTE: THe validators can be cached so we need to update their's container name before validation
+            Validator.TryUpdateContainerName(propertyChain);
+            var value = GetObjectToValidate(containerObject);
+            return Validator.GetValidationResult(value, validationContext);
         }
 
         protected virtual ValidationResult FormatValidationResult(ValidationResult result, string propertyChain)
@@ -156,8 +160,8 @@ namespace NValidator.Builders
             b.UpdateContainerName(ContainerName);
             b.BeforeValidation = BeforeValidation;
             b.StopChainOnError = StopChainOnError;
-            b.Previous = this;
             b.Validator = ValidatorFactory.NullValidator;
+            b.Previous = this;
             b.Next = null;
             Next = b;
 

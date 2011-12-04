@@ -32,6 +32,10 @@ namespace NValidator.Builders
 
         private void InternalSetValidator(IValidator validator)
         {
+            if (!(validator is INegatableValidator<TProperty>))
+            {
+                throw new ArgumentException("Provided validator must implement INegatableValidator<>", "validator");
+            }
             if (Validator is NegativeValidator<INegatableValidator<TProperty>, TProperty>)
             {
                 ((NegativeValidator<INegatableValidator<TProperty>, TProperty>)Validator).OriginalValidator = (INegatableValidator<TProperty>)validator;

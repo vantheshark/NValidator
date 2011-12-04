@@ -20,17 +20,12 @@ namespace NValidator.Builders
             ContainerName = previousBuilder.ChainName ?? previousBuilder.ContainerName;
         }
 
-        protected internal override IEnumerable<ValidationResult> InternalValidate(T containerObject, ValidationContext validationContext)
+        protected internal override IEnumerable<ValidationResult> GetResults(ValidationContext validationContext, T containerObject, out string propertyChain)
         {
-            if (BeforeValidation != null)
-            {
-                BeforeValidation(this, validationContext);
-            }
-
-            var propertyChain = ContainerName;
+            propertyChain = ContainerName;
             if (Validator == null || validationContext.ShouldIgnore(propertyChain))
             {
-                yield break;
+                return Enumerable.Empty<ValidationResult>();
             }
             var enumerable = (TProperty)GetObjectToValidate(containerObject);
             var results = new List<ValidationResult>();
@@ -41,20 +36,7 @@ namespace NValidator.Builders
                 Validator.TryUpdateContainerName(newChainName);
                 results.AddRange(Validator.GetValidationResult(item, validationContext));
             }
-
-            if (AfterValidation != null)
-            {
-                results = AfterValidation(this, results).ToList();
-            }
-
-            foreach (var modelValidationResult in results)
-            {
-                if (validationContext.ShouldIgnore(modelValidationResult.MemberName))
-                {
-                    continue; // foreach
-                }
-                yield return FormatValidationResult(modelValidationResult, propertyChain);
-            }
+            return results;
         }
     }
 }
