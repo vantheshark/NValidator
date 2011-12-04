@@ -67,7 +67,6 @@ namespace NValidator
 
         internal virtual protected IEnumerable<ValidationResult> InternalGetValidationResult(T value, ValidationContext validationContext)
         {
-            validationContext = validationContext ?? new ValidationContext {ContainerInstance = value};
             foreach (var b in ValidationBuilders)
             {
                 var builder = b;
@@ -82,6 +81,9 @@ namespace NValidator
                     {
                         builder.UpdateContainerName(ContainerName);
                     }
+
+                    validationContext = validationContext ?? new ValidationContext();
+                    validationContext.ContainerInstance = value;
 
                     var results = builder.Validate(value, validationContext).ToList();
                     var foundError = false;

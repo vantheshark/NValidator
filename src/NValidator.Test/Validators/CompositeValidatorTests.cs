@@ -28,30 +28,6 @@ namespace NValidator.Test.Validators
             }
         }
 
-        class OrderValidator2 : CompositeValidator<Order>
-        {
-            public OrderValidator2()
-            {
-                RuleFor(x => x.OrderDetails[0])
-                    .SetValidator<OrderDetailValidator>()
-                    .When(x => x.OrderDetails != null && x.OrderDetails[0] != null);
-                RuleFor(x => x.OrderDetails[1])
-                    .SetValidator<CustomOrderDetailValidator>()
-                    .When(x => x.OrderDetails != null && x.OrderDetails[1] != null);
-
-            }
-        }
-
-        class CustomOrderDetailValidator : TypeValidator<OrderDetail>
-        {
-            public CustomOrderDetailValidator()
-            {
-                RuleFor(x => x.Price).GreaterThanOrEqual(100).WithMessage("Error from custom validator");
-                RuleFor(x => x.Amount).GreaterThanOrEqual(2).WithMessage("Error from custom validator");
-                RuleFor(x => x.ProductCode).Not().Null().Length(1, 3).WithMessage("Error from custom validator");
-            }
-        }
-
         [Test]
         public void GetValidationResult_returns_errors_for_items_in_IEnumerable_property()
         {
@@ -85,9 +61,32 @@ namespace NValidator.Test.Validators
             Assert.AreEqual("ProductCode does not match condition.", results[2].Message);
         }
 
+        class OrderValidator2 : CompositeValidator<Order>
+        {
+            public OrderValidator2()
+            {
+                RuleFor(x => x.OrderDetails[0])
+                    .SetValidator<OrderDetailValidator>()
+                    .When(x => x.OrderDetails != null && x.OrderDetails[0] != null);
+                RuleFor(x => x.OrderDetails[1])
+                    .SetValidator<CustomOrderDetailValidator>()
+                    .When(x => x.OrderDetails != null && x.OrderDetails[1] != null);
+
+            }
+        }
+
+        class CustomOrderDetailValidator : TypeValidator<OrderDetail>
+        {
+            public CustomOrderDetailValidator()
+            {
+                RuleFor(x => x.Price).GreaterThanOrEqual(100).WithMessage("Error from custom validator");
+                RuleFor(x => x.Amount).GreaterThanOrEqual(2).WithMessage("Error from custom validator");
+                RuleFor(x => x.ProductCode).Not().Null().Length(1, 3).WithMessage("Error from custom validator");
+            }
+        }
 
         [Test]
-        public void Explicitly_set_validator_on_property_should_should_that_validator_to_validate()
+        public void Explicitly_set_validator_on_property_should_use_registered_validators_to_validate()
         {
             // Arrange
             ValidatorFactory.Current.Register<OrderDetailValidator>(true);

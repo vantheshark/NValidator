@@ -103,6 +103,9 @@ namespace NValidator.Builders
 
         public IEnumerable<ValidationResult> Validate(T containerObject, ValidationContext validationContext)
         {
+            validationContext = validationContext ?? new ValidationContext();
+            validationContext.ContainerInstance = containerObject;
+
             return InternalValidate(containerObject, validationContext);
         }
 

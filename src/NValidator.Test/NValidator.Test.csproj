@@ -66,6 +66,7 @@
     <Compile Include="Builders\ValidationBuilderTests.cs" />
     <Compile Include="TypeExtensionsTests.cs" />
     <Compile Include="ValidatorExtensions\AllWithMessageTests.cs" />
+    <Compile Include="ValidatorExtensions\WhenTests.cs" />
     <Compile Include="ValidatorExtensions\ForEachTests.cs" />
     <Compile Include="ValidatorExtensions\NotTests.cs" />
     <Compile Include="ValidatorExtensions\StopOnFirstErrorTests.cs" />

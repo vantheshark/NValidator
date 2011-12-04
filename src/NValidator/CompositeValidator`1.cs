@@ -28,7 +28,7 @@ namespace NValidator
                         AddValidatorForProperty(item.GetType(), string.Format("{0}.{1}[{2}]", ContainerName ?? typeof(T).Name, property.Name, i++), item);
                     }
                 }
-                AddValidatorForProperty(property.PropertyType, property.Name, property.GetValue(value));
+                AddValidatorForProperty(property.PropertyType, string.Format("{0}.{1}", ContainerName ?? typeof(T).Name, property.Name), property.GetValue(value));
             }
             return base.InternalGetValidationResult(value, validationContext);
         }
