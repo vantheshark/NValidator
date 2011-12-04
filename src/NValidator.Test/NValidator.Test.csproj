@@ -55,10 +55,12 @@
   <ItemGroup>
     <Compile Include="Builders\ValidationBuilderHelpersTests.cs" />
     <Compile Include="ChainingValidatorsTests.cs" />
+    <Compile Include="Models\Address.cs" />
+    <Compile Include="Models\User.cs" />
     <Compile Include="ResetDefaultValidatorFactoryTests.cs" />
     <Compile Include="DefaultValidatorFactoryTests.cs" />
-    <Compile Include="Order.cs" />
-    <Compile Include="OrderDetail.cs" />
+    <Compile Include="Models\Order.cs" />
+    <Compile Include="Models\OrderDetail.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SimpleTests.cs" />
     <Compile Include="Builders\ValidationBuilderTests.cs" />

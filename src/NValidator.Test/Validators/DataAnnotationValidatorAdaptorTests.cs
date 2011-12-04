@@ -1,6 +1,8 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using NUnit.Framework;
+using NValidator.Test.Models;
+
 // ReSharper disable InconsistentNaming
 namespace NValidator.Test.Validators
 {

@@ -1,6 +1,7 @@
 ﻿
 using System.Linq;
 using NUnit.Framework;
+using NValidator.Test.Models;
 using NValidator.Validators;
 
 // ReSharper disable InconsistentNaming

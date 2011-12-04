@@ -1,5 +1,6 @@
 ﻿using NUnit.Framework;
 using NValidator.Builders;
+using NValidator.Test.Models;
 
 // ReSharper disable InconsistentNaming
 namespace NValidator.Test.Builders
