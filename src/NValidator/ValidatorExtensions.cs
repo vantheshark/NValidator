@@ -11,9 +11,30 @@ namespace NValidator
 {
     public static class ValidatorExtensions
     {
+        /// <summary>
+        /// Return true only if the validated object equals to one of the provided values
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <typeparam name="TProperty">The type of the property.</typeparam>
+        /// <param name="validationBuilder">The validation builder.</param>
+        /// <param name="allowedValues">The allowed values.</param>
+        /// <returns></returns>
         public static IPostInitFluentValidationBuilder<T, TProperty> In<T, TProperty>(this IPreInitFluentValidationBuilder<T, TProperty> validationBuilder, params TProperty[] allowedValues) where TProperty : IComparable
         {
             return validationBuilder.ToBuilder().SetValidator(new AllowedValuesValidator<TProperty>(allowedValues));
+        }
+
+        /// <summary>
+        /// Allows the specified values and ignore if the object to validated is null
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <typeparam name="TProperty">The type of the property.</typeparam>
+        /// <param name="validationBuilder">The validation builder.</param>
+        /// <param name="allowedValues">The allowed values.</param>
+        /// <returns></returns>
+        public static IPostInitFluentValidationBuilder<T, TProperty> Allow<T, TProperty>(this IPreInitFluentValidationBuilder<T, TProperty> validationBuilder, params TProperty[] allowedValues) where TProperty : IComparable
+        {
+            return validationBuilder.ToBuilder().SetValidator(new AllowedValuesValidator<TProperty>(allowedValues, true));
         }
 
         public static IPostInitFluentValidationBuilder<T, TProperty> SetValidator<T, TProperty>(this IFluentValidationBuilder<T, TProperty> validationBuilder, IValidator<TProperty> validator)
@@ -240,8 +261,6 @@ namespace NValidator
             var compositeBuilder = new CompositeValidationBuilder<T, TItem[], TItem>(originalBuilder);
             rules((TypeValidator<TItem>) compositeBuilder.Validator);
         }
-
-
 
         public static void ForEach<T, TItem>(this IFluentValidationBuilder<T, IEnumerable<TItem>> validationBuilder, Action<TypeValidator<TItem>> rules)
         {
