@@ -7,8 +7,9 @@ namespace NValidator.Validators
     public class AllowedValuesValidator<T> : BaseNegatableValidator<T> where T : IComparable
     {
         private readonly IEnumerable<T> _allowedValues;
+        private readonly bool _ignoreNull;
 
-        public AllowedValuesValidator(IEnumerable<T> allowedValues)
+        public AllowedValuesValidator(IEnumerable<T> allowedValues, bool ignoreNull = false)
         {
             if (allowedValues == null)
             {
@@ -19,6 +20,7 @@ namespace NValidator.Validators
                 throw new ArgumentException("Allowed values must contain at least 1 item.", "allowedValues");
             }
             _allowedValues = allowedValues;
+            _ignoreNull = ignoreNull;
         }
 
         public override IEnumerable<ValidationResult> GetNegatableErrors(T value, ValidationContext validationContext)
@@ -29,7 +31,7 @@ namespace NValidator.Validators
 
         public sealed override bool IsValid(T value, ValidationContext validationContext)
         {
-            return _allowedValues.Contains(value);
+            return value == null && _ignoreNull || _allowedValues.Contains(value);
         }
 
         public override IEnumerable<ValidationResult> GetErrors(T value, ValidationContext validationContext)

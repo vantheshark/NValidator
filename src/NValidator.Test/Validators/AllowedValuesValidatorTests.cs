@@ -1,6 +1,8 @@
 ﻿
 using System.Linq;
 using NUnit.Framework;
+using NValidator.Validators;
+
 // ReSharper disable InconsistentNaming
 namespace NValidator.Test.Validators
 {
@@ -65,6 +67,24 @@ namespace NValidator.Test.Validators
 
             // Assert
             Assert.AreEqual(0, results.Count());
+        }
+
+        [TestCase(null, true)]
+        [TestCase("", false)]
+        [TestCase("1", true)]
+        [TestCase("2", true)]
+        [TestCase("3", true)]
+        [TestCase("4", false)]
+        public void IsValid_should_return_true_if_ignore_null_value(string value, bool result)
+        {
+            // Arrange
+            var validator = new AllowedValuesValidator<string>(new[] {"1", "2", "3"}, true);
+
+            // Action
+            var actualResult = validator.IsValid(value);
+
+            // Assert
+            Assert.That(actualResult, Is.EqualTo(result));
         }
     }
 }
