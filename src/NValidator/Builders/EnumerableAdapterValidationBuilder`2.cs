@@ -14,7 +14,7 @@ namespace NValidator.Builders
             AfterValidation = previousBuilder.AfterValidation;
             previousBuilder.Next = this;
             Previous = previousBuilder;
-            Validator = new InternalTypeValidator<TItem>();
+            Validator = ValidatorFactory.NullValidator;
             ContainerName = previousBuilder.ChainName ?? previousBuilder.ContainerName;
 
             InternalBuilder = (IValidationBuilder<T, TItem>)ValidationBuilderHelpers.CreateGenericBuilder<T>(typeof(TItem), default(TItem), ValidatorFactory.DefaultValidationBuilderType);
