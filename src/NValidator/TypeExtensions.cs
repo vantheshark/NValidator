@@ -27,5 +27,31 @@ namespace NValidator
             }
             return false;
         }
+
+        internal static bool IsMoreConcreteGenericParam(this Type validatorA, Type validatorB)
+        {
+            if (IsSubclassOfRawGeneric(validatorA, typeof(IValidator<>)) &&
+                IsSubclassOfRawGeneric(validatorB, typeof(IValidator<>)) != true)
+            {
+                throw new Exception("One of the validator does not implement IValidator<>");
+            }
+
+            Type genericParamTypeA = GetGenericParamOfValidator(validatorA);
+            Type genericParamTypeB = GetGenericParamOfValidator(validatorB);
+
+            return genericParamTypeA != null &&
+                   genericParamTypeB != null &&
+                   genericParamTypeB.IsAssignableFrom(genericParamTypeA);
+        }
+
+        private static Type GetGenericParamOfValidator(Type validatorType)
+        {
+            var genericTypeOfB = validatorType;
+            while (genericTypeOfB != null && !genericTypeOfB.IsGenericType)
+            {
+                genericTypeOfB = genericTypeOfB.BaseType;
+            }
+            return genericTypeOfB != null ? genericTypeOfB.GetGenericArguments()[0] : null;
+        }
     }
 }

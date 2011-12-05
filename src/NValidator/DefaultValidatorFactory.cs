@@ -116,20 +116,53 @@ namespace NValidator
         private static object GetValidator(Type validatorType, bool fromDefaultCache)
         {
             var instanceCache = GetCache(fromDefaultCache);
+            
+            var validatorsInCache = instanceCache.Where(x => x.GetType().Is(validatorType)).ToList();
+            var foundValidator = GetMostConcreteValidator(validatorsInCache);
 
-            var objectInCache = instanceCache.FirstOrDefault(x => x.GetType().Is(validatorType));
-
-            if (objectInCache == null)
+            if (foundValidator == null)
             {
                 var typeCache = GetTypeCache(fromDefaultCache);
-                var type = typeCache.FirstOrDefault(x => x == validatorType || x.Is(validatorType));
-                if (type != null)
+                var validatorTypesInCache = typeCache.Where(x => x == validatorType || x.Is(validatorType)).ToList();
+                var foundValidatorType = GetMostConcreteValidatorType(validatorTypesInCache);
+
+                if (foundValidatorType != null)
                 {
-                    var validator = (IValidator)Activator.CreateInstance(type);
+                    var validator = (IValidator)Activator.CreateInstance(foundValidatorType);
                     return validator;
                 }
             }
-            return objectInCache;
+            return foundValidator;
+        }
+
+        private static Type GetMostConcreteValidatorType(List<Type> typesInCache)
+        {
+            typesInCache.Sort(CompareByConcreteGenericParam);
+            return typesInCache.LastOrDefault();
+        }
+
+        private static object GetMostConcreteValidator(List<IValidator> objectsInCache)
+        {
+            objectsInCache.Sort(CompareByConcreteGenericParam);
+            return objectsInCache.LastOrDefault();
+        }
+
+        private static int CompareByConcreteGenericParam(IValidator a, IValidator b)
+        {
+            if (a.GetType() == b.GetType())
+            {
+                return 0;
+            }
+            return a.GetType().IsMoreConcreteGenericParam(b.GetType()) ? 1 : -1;
+        }
+
+        private static int CompareByConcreteGenericParam(Type a, Type b)
+        {
+            if (a == b)
+            {
+                return 0;
+            }
+            return a.IsMoreConcreteGenericParam(b) ? 1 : -1;
         }
     }
 }

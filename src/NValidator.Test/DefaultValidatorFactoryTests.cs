@@ -205,6 +205,25 @@ namespace NValidator.Test
             Assert.IsNotNull(ValidatorFactory.Current.GetValidatorFor(typeof(Order)));
         }
 
+        class DerivedOrder : Order { }
+        class DerivedOrderValidator : TypeValidator<DerivedOrder> { }
+        [Test]
+        public void GetValidatorFor_should_return_exact_the_validator_for_sub_type()
+        {
+            // Arrange
+            var v1 = new OrderValidator();
+            var v2 = new DerivedOrderValidator();
+
+            // Action
+            ValidatorFactory.Current.Register(v1, true);
+            ValidatorFactory.Current.Register(v2, true);
+
+            // Assert
+            Assert.AreNotSame(v1, v2);
+            Assert.AreSame(v1, ValidatorFactory.Current.GetValidatorFor(typeof(Order)));
+            Assert.AreSame(v2, ValidatorFactory.Current.GetValidatorFor(typeof(DerivedOrder)));
+        }
+
 
         [Test]
         public void IsDefaultValidator_should_return_a_true_if_type_is_registered_as_default()
