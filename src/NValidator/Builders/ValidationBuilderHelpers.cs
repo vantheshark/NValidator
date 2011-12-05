@@ -12,7 +12,7 @@ namespace NValidator.Builders
             {
                 newBuilder = new ValidationBuilder<T, TProperty>(expression);
             }
-            else if (defaultBuilderType.Is(typeof(ValidationBuilder<,>)))
+            else if (defaultBuilderType.Is(typeof(ValidationBuilder<,>)) && defaultBuilderType.IsGenericTypeDefinition)
             {
                 Type generic = defaultBuilderType.MakeGenericType(typeof(T), typeof(TProperty));
                 newBuilder = Activator.CreateInstance(generic, expression) as IValidationBuilder<T, TProperty>;

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Linq.Expressions;
@@ -255,19 +256,44 @@ namespace NValidator
             return new NegativeValidationBuilder<T, TProperty>(originalBuilder);
         }
 
-        public static void ForEach<T, TItem>(this IFluentValidationBuilder<T, TItem[]> validationBuilder, Action<TypeValidator<TItem>> rules)
+        #region -- For Each --
+        public static void ForEach<T, TProperty, TItem>(this IFluentValidationBuilder<T, TProperty> validationBuilder, Action<TypeValidator<TItem>> rules) where TProperty : IEnumerable<TItem>
         {
             var originalBuilder = validationBuilder.ToBuilder();
-            var compositeBuilder = new CompositeValidationBuilder<T, TItem[], TItem>(originalBuilder);
-            rules((TypeValidator<TItem>) compositeBuilder.Validator);
+            var compositeBuilder = new CompositeValidationBuilder<T, TProperty, TItem>(originalBuilder);
+            rules((TypeValidator<TItem>)compositeBuilder.Validator);
+        }
+
+        public static void ForEach<T, TItem>(this IFluentValidationBuilder<T, TItem[]> validationBuilder, Action<TypeValidator<TItem>> rules)
+        {
+            ForEach<T, TItem[], TItem>(validationBuilder, rules);
         }
 
         public static void ForEach<T, TItem>(this IFluentValidationBuilder<T, IEnumerable<TItem>> validationBuilder, Action<TypeValidator<TItem>> rules)
         {
-            var originalBuilder = validationBuilder.ToBuilder();
-            var compositeBuilder = new CompositeValidationBuilder<T, IEnumerable<TItem>, TItem>(originalBuilder);
-            rules((TypeValidator<TItem>)compositeBuilder.Validator);
+            ForEach<T, IEnumerable<TItem>, TItem>(validationBuilder, rules);
         }
+
+        public static void ForEach<T, TItem>(this IFluentValidationBuilder<T, ICollection<TItem>> validationBuilder, Action<TypeValidator<TItem>> rules)
+        {
+            ForEach<T, ICollection<TItem>, TItem>(validationBuilder, rules);
+        }
+        
+        public static void ForEach<T, TItem>(this IFluentValidationBuilder<T, Collection<TItem>> validationBuilder, Action<TypeValidator<TItem>> rules)
+        {
+            ForEach<T, Collection<TItem>, TItem>(validationBuilder, rules);
+        }
+
+        public static void ForEach<T, TItem>(this IFluentValidationBuilder<T, IList<TItem>> validationBuilder, Action<TypeValidator<TItem>> rules)
+        {
+            ForEach<T, IList<TItem>, TItem>(validationBuilder, rules);
+        }
+
+        public static void ForEach<T, TItem>(this IFluentValidationBuilder<T, List<TItem>> validationBuilder, Action<TypeValidator<TItem>> rules)
+        {
+            ForEach<T, List<TItem>, TItem>(validationBuilder, rules);
+        }
+        #endregion
 
         public static string TryGetContainerName(this IValidator validator)
         {

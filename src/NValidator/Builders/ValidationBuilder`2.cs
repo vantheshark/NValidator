@@ -8,6 +8,9 @@ namespace NValidator.Builders
 {
     public class ValidationBuilder<T, TProperty> : IValidationBuilder<T, TProperty>
     {
+        public Action<IValidationBuilder<T>, ValidationContext> BeforeValidation { get; set; }
+        public Func<IValidationBuilder<T>, IEnumerable<ValidationResult>, IEnumerable<ValidationResult>> AfterValidation { get; set; }
+        public IValidator Validator { get; set; }
         public IValidationBuilder<T> Next { get; set; }
         public IValidationBuilder<T> Previous { get; set; }
         public bool StopChainOnError { get; set; }
@@ -26,8 +29,19 @@ namespace NValidator.Builders
             set { _chainName = value; }
         }
 
-        public Expression<Func<T, TProperty>> Expression { get; set; }
-        public IValidator Validator { get; set; }
+        private Expression<Func<T, TProperty>> _expression;
+        public Expression<Func<T, TProperty>> Expression 
+        {
+            get
+            {
+                return _expression;
+            }
+            set { 
+                _expression = value;
+                _chainName = null;
+            }
+        }
+        
         private string _containerName;
         public string ContainerName { 
             get
@@ -40,8 +54,6 @@ namespace NValidator.Builders
                 _chainName = null;
             }
         }
-        public Action<IValidationBuilder<T>, ValidationContext> BeforeValidation { get; set; }
-        public Func<IValidationBuilder<T>, IEnumerable<ValidationResult>, IEnumerable<ValidationResult>> AfterValidation { get; set; }
         
         public ValidationBuilder(Expression<Func<T, TProperty>> expression)
         {

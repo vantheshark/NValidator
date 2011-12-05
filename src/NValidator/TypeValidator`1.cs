@@ -43,6 +43,22 @@ namespace NValidator
             }
         }
 
+        /// <summary>
+        /// Create rules for property of the same type
+        /// </summary>
+        /// <typeparam name="TProperty">The type of the property.</typeparam>
+        /// <param name="expressions">The expressions.</param>
+        /// <returns></returns>
+        public IFluentValidationBuilder<T, TProperty> RulesFor<TProperty>(params Expression<Func<T, TProperty>>[] expressions)
+        {
+            Expression<Func<T, TProperty>> nullExpression = null;
+            var dummyBuilder = CreateGenericBuilder(nullExpression);
+            dummyBuilder.UpdateContainerName(ContainerName);
+            var sharedRulesBuilder = new SharedRulesValidationBuilder<T, TProperty>(dummyBuilder, expressions);
+            ValidationBuilders.Add(sharedRulesBuilder);
+            return sharedRulesBuilder.InternalBuilder;
+        }
+
         public IFluentValidationBuilder<T, TProperty> RuleFor<TProperty>(Expression<Func<T, TProperty>> expression)
         {
             var newBuilder = CreateGenericBuilder(expression);
