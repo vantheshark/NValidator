@@ -117,7 +117,7 @@ namespace NValidator.Builders
         /// <returns></returns>
         public static IValidationBuilder<T, TProperty> CloneChain<T, TProperty>(IValidationBuilder<T, TProperty> firstBuilder, Action<IValidationBuilder<T, TProperty>> action = null)
         {
-            IValidationBuilder<T, TProperty> newBeginingBuilder = CloneBuilderWithoutConnection(firstBuilder);
+            var newBeginingBuilder = (IValidationBuilder<T, TProperty>)firstBuilder.Clone();
             var pointer = firstBuilder.Next as IValidationBuilder<T, TProperty>;
             var newBuilderPointer = newBeginingBuilder;
             if (action != null)
@@ -140,18 +140,6 @@ namespace NValidator.Builders
             }
 
             return newBeginingBuilder;
-        }
-
-        private static IValidationBuilder<T, TProperty> CloneBuilderWithoutConnection<T, TProperty>(IValidationBuilder<T, TProperty> builder)
-        {
-            IValidationBuilder<T, TProperty> newBuilder = CreateGenericBuilder(builder.Expression, builder.GetType());
-            newBuilder.AfterValidation = builder.AfterValidation;
-            newBuilder.BeforeValidation = builder.BeforeValidation;
-            newBuilder.ChainName = builder.ChainName;
-            newBuilder.StopChainOnError = builder.StopChainOnError;
-            newBuilder.Validator = builder.Validator;
-            newBuilder.UpdateContainerName(builder.ContainerName);
-            return newBuilder;
         }
     }
 }
