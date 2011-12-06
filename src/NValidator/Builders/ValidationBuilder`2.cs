@@ -30,6 +30,7 @@ namespace NValidator.Builders
         }
 
         private Expression<Func<T, TProperty>> _expression;
+        //NOTE: It's not neccessary to be virtual
         public Expression<Func<T, TProperty>> Expression 
         {
             get
@@ -43,6 +44,7 @@ namespace NValidator.Builders
         }
         
         private string _containerName;
+        //NOTE: It's not neccessary to be virtual
         public string ContainerName { 
             get
             {
@@ -98,19 +100,19 @@ namespace NValidator.Builders
         public IValidationBuilder<T, TProperty> SetValidator<TValidator>() where TValidator : class, IValidator<TProperty>
         {
             Validator = new LazyValidator<TValidator, TProperty>();
-            return (IValidationBuilder<T, TProperty>)Clone();
+            return CreateNewBuilder();
         }
 
         public virtual IValidationBuilder<T, TProperty> SetValidator(IValidator<TProperty> validator)
         {
             Validator = validator;
-            return (IValidationBuilder<T, TProperty>)Clone();
+            return CreateNewBuilder();
         }
 
         public virtual IValidationBuilder<T> SetValidator(IValidator validator)
         {
             Validator = validator;
-            return (IValidationBuilder<T, TProperty>)Clone();
+            return CreateNewBuilder();
         }
 
         public IEnumerable<ValidationResult> Validate(T containerObject, ValidationContext validationContext)
@@ -169,17 +171,35 @@ namespace NValidator.Builders
             return result;
         }
 
+        protected virtual IValidationBuilder<T, TProperty> CreateNewBuilder()
+        {
+            var newOne = (IValidationBuilder<T, TProperty>) Clone();
+            newOne.Validator = ValidatorFactory.NullValidator;
+            MakeConnectionTo(newOne);
+            return newOne;
+        }
+
+        protected void MakeConnectionTo(IValidationBuilder<T, TProperty> newBuilder)
+        {
+            newBuilder.Previous = this;
+            newBuilder.Next = null;
+            Next = newBuilder;
+        }
+
+        /// <summary>
+        /// Creates a new object that is a copy of the current builder without the connection to other builders
+        /// </summary>
+        /// <returns>
+        /// A new object that is a copy of this instance.
+        /// </returns>
         public virtual object Clone()
         {
             var b = ValidationBuilderHelpers.CreateGenericBuilder(Expression, ValidatorFactory.DefaultValidationBuilderType);
             b.UpdateContainerName(ContainerName);
             b.BeforeValidation = BeforeValidation;
             b.StopChainOnError = StopChainOnError;
-            b.Validator = ValidatorFactory.NullValidator;
-            b.Previous = this;
-            b.Next = null;
-            Next = b;
-
+            b.Validator = Validator;
+            b.UpdateContainerName(ContainerName);
             return b;
         }
     }

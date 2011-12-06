@@ -63,5 +63,10 @@ namespace NValidator.Builders
             }
             return results;
         }
+
+        public override object Clone()
+        {
+            throw new NotSupportedException();
+        }
     }
 }

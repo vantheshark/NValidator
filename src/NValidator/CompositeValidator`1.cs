@@ -17,12 +17,13 @@ namespace NValidator
         internal override protected IEnumerable<ValidationResult> InternalGetValidationResult(T value, ValidationContext validationContext)
         {
             var properties = TypeDescriptor.GetProperties(typeof (T));
-            var i = 0;
+            
             foreach (PropertyDescriptor property in properties)
             {
                 var enumerable = property.GetValue(value) as IEnumerable;
                 if (enumerable != null && typeof(string) != property.PropertyType)
                 {
+                    var i = 0;
                     foreach (var item in enumerable)
                     {
                         AddValidatorForProperty(item.GetType(), string.Format("{0}.{1}[{2}]", ContainerName ?? typeof(T).Name, property.Name, i++), item);

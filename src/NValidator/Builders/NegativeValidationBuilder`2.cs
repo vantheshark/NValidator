@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq.Expressions;
 
 namespace NValidator.Builders
 {
@@ -18,16 +19,21 @@ namespace NValidator.Builders
             Validator = new NegativeValidator<INegatableValidator<TProperty>, TProperty>();
         }
 
+        private NegativeValidationBuilder(Expression<Func<T, TProperty>> expression)
+            : base(expression)
+        {
+        } 
+
         public override IValidationBuilder<T> SetValidator(IValidator validator)
         {
             InternalSetValidator(validator);
-            return (IValidationBuilder<T>) Clone();
+            return CreateNewBuilder();
         }
 
         public override IValidationBuilder<T, TProperty> SetValidator(IValidator<TProperty> validator)
         {
             InternalSetValidator(validator);
-            return (IValidationBuilder<T, TProperty>)Clone();
+            return CreateNewBuilder();
         }
 
         private void InternalSetValidator(IValidator validator)
@@ -44,6 +50,27 @@ namespace NValidator.Builders
             {
                 throw new Exception("Validator must be a NegativeValidator");
             }
+        }
+
+        protected override IValidationBuilder<T, TProperty> CreateNewBuilder()
+        {
+            var newOne = (IValidationBuilder<T, TProperty>)base.Clone();
+            newOne.Validator = ValidatorFactory.NullValidator;
+            MakeConnectionTo(newOne);
+            return newOne;
+        }
+
+        public override object Clone()
+        {
+            var cloned = new NegativeValidationBuilder<T, TProperty>(Expression)
+            {
+                BeforeValidation = BeforeValidation,
+                AfterValidation = AfterValidation,
+                Validator = Validator,
+                ContainerName = ContainerName,
+                StopChainOnError = StopChainOnError
+            };
+            return cloned;
         }
 
         private class NegativeValidator<TValidator, TPropertyType> : BaseNegatableValidator<TPropertyType>, IHaveContainer where TValidator : class, INegatableValidator<TPropertyType>

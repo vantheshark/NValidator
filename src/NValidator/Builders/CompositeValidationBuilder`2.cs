@@ -1,5 +1,7 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 
 namespace NValidator.Builders
 {
@@ -19,6 +21,10 @@ namespace NValidator.Builders
             Validator = new InternalTypeValidator<TItem>();
             ContainerName = previousBuilder.ChainName ?? previousBuilder.ContainerName;
         }
+        private CompositeValidationBuilder(Expression<Func<T, TProperty>> expression)
+            : base(expression)
+        {
+        }
 
         protected internal override IEnumerable<ValidationResult> GetResults(ValidationContext validationContext, T containerObject, out string propertyChain)
         {
@@ -37,6 +43,27 @@ namespace NValidator.Builders
                 results.AddRange(Validator.GetValidationResult(item, validationContext));
             }
             return results;
+        }
+
+        protected override IValidationBuilder<T, TProperty> CreateNewBuilder()
+        {
+            var newOne = (IValidationBuilder<T, TProperty>)base.Clone();
+            newOne.Validator = ValidatorFactory.NullValidator;
+            MakeConnectionTo(newOne);
+            return newOne;
+        }
+
+        public override object  Clone()
+        {
+            var cloned = new CompositeValidationBuilder<T, TProperty, TItem>(Expression)
+            {
+                BeforeValidation = BeforeValidation,
+                AfterValidation = AfterValidation,
+                Validator = Validator,
+                ContainerName = ContainerName,
+                StopChainOnError = StopChainOnError
+            };
+            return cloned;
         }
     }
 }

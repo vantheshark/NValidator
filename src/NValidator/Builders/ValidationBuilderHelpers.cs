@@ -126,7 +126,8 @@ namespace NValidator.Builders
             }
             while (pointer != null)
             {
-                var nextBuilder = CloneBuilderWithoutConnection(pointer);
+                //var nextBuilder = CloneBuilderWithoutConnection(pointer);
+                var nextBuilder = (IValidationBuilder<T, TProperty>) pointer.Clone();
                 newBuilderPointer.Next = nextBuilder;
                 nextBuilder.Previous = newBuilderPointer;
                 if (action != null)
