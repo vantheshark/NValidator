@@ -154,6 +154,20 @@ namespace NValidator.Test.ValidatorExtensions
             Assert.AreEqual("Customer.Address[2]", results[2].MemberName);
             Assert.AreEqual("Address[2] must be between 1 and 10 in length. You had 11 in length.", results[2].Message);
         }
+
+        [Test]
+        public void RuleForEach_should_ignore_validation_if_the_enumerble_is_null()
+        {
+            // Arrange
+            var customer = new Customer();
+            var validator = new CustomerValidator();
+
+            // Action
+            var results = validator.GetValidationResult(customer).ToList();
+
+            // Assert
+            Assert.AreEqual(0, results.Count());
+        }
     }
 }
 // ReSharper restore InconsistentNaming

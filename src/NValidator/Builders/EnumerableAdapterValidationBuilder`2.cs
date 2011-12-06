@@ -23,12 +23,12 @@ namespace NValidator.Builders
         protected internal override IEnumerable<ValidationResult> GetResults(ValidationContext validationContext, T containerObject, out string propertyChain)
         {
             propertyChain = ContainerName;
-            if (InternalBuilder == null || validationContext.ShouldIgnore(propertyChain))
+            var enumerable = (TProperty)GetObjectToValidate(containerObject);
+            if (InternalBuilder == null || validationContext.ShouldIgnore(propertyChain) || enumerable == null)
             {
                 return Enumerable.Empty<ValidationResult>();
             }
-
-            var enumerable = (TProperty)GetObjectToValidate(containerObject);
+            
             var results = new List<ValidationResult>();
             var index = 0;
             
