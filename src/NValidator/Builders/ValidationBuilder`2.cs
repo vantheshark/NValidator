@@ -82,12 +82,23 @@ namespace NValidator.Builders
         private string GetChainFromExpression()
         {
             var ex = Expression;
-            if (ex != null && ex.NodeType == ExpressionType.Lambda &&
-               (ex.Body.NodeType == ExpressionType.MemberAccess || ex.Body.NodeType == ExpressionType.ArrayIndex))
+            if (ex != null && ex.NodeType == ExpressionType.Lambda)
             {
-                var parameter = ex.Parameters[0].ToString();
-                var result = ex.Body.ToString().Remove(0, parameter.Length + 1);
-                return string.Format("{0}.{1}", ContainerName ?? typeof(T).Name, result);
+                if (ex.Body.NodeType == ExpressionType.MemberAccess || ex.Body.NodeType == ExpressionType.ArrayIndex)
+                {
+                    var parameter = ex.Parameters[0].ToString();
+                    var result = ex.Body.ToString().Remove(0, parameter.Length + 1);
+                    return string.Format("{0}.{1}", ContainerName ?? typeof(T).Name, result);
+                }
+                if (ex.Body.NodeType == ExpressionType.Parameter)
+                {
+                    var parameter = ex.Parameters[0].ToString();
+                    var result = ex.Body.ToString();
+                    if (parameter == result)
+                    {
+                        return typeof (T).Name;
+                    }
+                }
             }
             return null;
         }
@@ -163,9 +174,18 @@ namespace NValidator.Builders
         protected virtual ValidationResult FormatValidationResult(ValidationResult result, string propertyChain)
         {
             result.MemberName = result.MemberName ?? propertyChain;
-            if (string.IsNullOrEmpty(result.PropertyName) && result.MemberName != null && result.MemberName.Contains("."))
+            if (string.IsNullOrEmpty(result.PropertyName) && result.MemberName != null)
             {
-                result.PropertyName = result.MemberName.Substring(result.MemberName.LastIndexOf(".") + 1, result.MemberName.Length - result.MemberName.LastIndexOf(".") - 1);
+                if (result.MemberName.Contains("."))
+                {
+                    result.PropertyName = result.MemberName.Substring(result.MemberName.LastIndexOf(".") + 1,
+                                                                      result.MemberName.Length -
+                                                                      result.MemberName.LastIndexOf(".") - 1);
+                }
+                else
+                {
+                    result.PropertyName = result.MemberName;
+                }
             }
             result.Message = result.Message.Replace("@PropertyName", result.PropertyName);
             return result;

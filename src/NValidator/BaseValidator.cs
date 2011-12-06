@@ -28,7 +28,9 @@ namespace NValidator
     {
         public sealed override IEnumerable<ValidationResult> GetValidationResult(object value, ValidationContext validationContext)
         {
-            return GetValidationResult((T) value, validationContext);
+            return value != null 
+                         ? GetValidationResult((T)value, validationContext) 
+                         : GetValidationResult(default(T), validationContext); // That mean T is a reference type
         }
 
         public bool IsValid(T value)

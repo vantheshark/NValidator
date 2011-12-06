@@ -75,6 +75,7 @@
     <Compile Include="ValidatorExtensions\IgnoreValidationTests.cs" />
     <Compile Include="ValidatorExtensions\WithMessageTests.cs" />
     <Compile Include="Validators\AllowedValuesValidatorTests.cs" />
+    <Compile Include="Validators\BaseValidatorTests.cs" />
     <Compile Include="Validators\ConditionalValidatorTests.cs" />
     <Compile Include="Validators\CompositeValidatorTests.cs" />
     <Compile Include="ValidatorExtensions\MustTests.cs" />
