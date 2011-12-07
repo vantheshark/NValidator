@@ -68,6 +68,7 @@ namespace NValidator.Test.Validators
                 RuleFor(x => x.OrderDetails[0])
                     .SetValidator<OrderDetailValidator>()
                     .When(x => x.OrderDetails != null && x.OrderDetails[0] != null);
+
                 RuleFor(x => x.OrderDetails[1])
                     .SetValidator<CustomOrderDetailValidator>()
                     .When(x => x.OrderDetails != null && x.OrderDetails[1] != null);

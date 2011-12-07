@@ -36,11 +36,12 @@ namespace NValidator
 
         private void AddValidatorForProperty(Type propertyType, string containerName, object propertyValue)
         {
+            // NOTE: IT SHOULD IGNORE VALIDATION ON THE NULL
+            // IF WE WANT A PROPERTY NOT NULL, MAKE A VALIDATION RULL ON THE CONTAINER VALIDATOR
             if (propertyValue == null)
             {
                 return;
             }
-            var builder = CreateGenericBuilder(propertyType, propertyValue);
 
             if (ValidationBuilders.Any(x => x.ChainName == containerName))
             {
@@ -48,6 +49,7 @@ namespace NValidator
                 return;
             }
 
+            var builder = CreateGenericBuilder(propertyType, propertyValue);
             var validator = ValidatorFactory.Current.GetValidatorFor(propertyType);
 
             if (builder != null && validator != null && 

@@ -90,15 +90,17 @@ namespace NValidator.Builders
                     var result = ex.Body.ToString().Remove(0, parameter.Length + 1);
                     return string.Format("{0}.{1}", ContainerName ?? typeof(T).Name, result);
                 }
-                if (ex.Body.NodeType == ExpressionType.Parameter)
-                {
-                    var parameter = ex.Parameters[0].ToString();
-                    var result = ex.Body.ToString();
-                    if (parameter == result)
-                    {
-                        return typeof (T).Name;
-                    }
-                }
+
+                // NOTE: IF the container is null, the chain will be resolved in GetResults()
+                //if (ex.Body.NodeType == ExpressionType.Parameter)
+                //{
+                //    var parameter = ex.Parameters[0].ToString();
+                //    var result = ex.Body.ToString();
+                //    if (parameter == result)
+                //    {
+                //        return typeof (T).Name;
+                //    }
+                //}
             }
             return null;
         }
@@ -160,7 +162,7 @@ namespace NValidator.Builders
 
         internal protected virtual IEnumerable<ValidationResult> GetResults(ValidationContext validationContext, T containerObject, out string propertyChain)
         {
-            propertyChain = ChainName ?? ContainerName;
+            propertyChain = ChainName ?? ContainerName ?? typeof(T).Name;
             if (Validator == null || validationContext.ShouldIgnore(propertyChain))
             {
                 return Enumerable.Empty<ValidationResult>();

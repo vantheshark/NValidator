@@ -46,7 +46,7 @@ namespace NValidator.Validators
 
         public virtual IEnumerable<ValidationResult> GetValidationResult(TProperty value, ValidationContext validationContext)
         {
-            if (_useExpression && validationContext.ContainerInstance is T)
+            if (_useExpression && validationContext.ContainerInstance is T /* That means the container instance is not null */)
             {
                 _value = _expression.Compile()((T)validationContext.ContainerInstance);
             }

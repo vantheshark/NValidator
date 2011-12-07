@@ -53,5 +53,10 @@ namespace NValidator
             }
             return genericTypeOfB != null ? genericTypeOfB.GetGenericArguments()[0] : null;
         }
+
+        public static bool IsSimpleType(this Type type)
+        {
+            return type.IsPrimitive || type.Equals(typeof (string));
+        }
     }
 }
