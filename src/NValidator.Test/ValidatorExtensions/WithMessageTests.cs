@@ -41,6 +41,33 @@ namespace NValidator.Test.ValidatorExtensions
             Assert.AreEqual("Order.ID", results[1].MemberName);
             Assert.AreEqual("The 'ID' must equal to 123, you entered 234.", results[1].Message);
         }
+
+        class OrderValidator2 : TypeValidator<Order>
+        {
+            public OrderValidator2()
+            {
+                RuleFor(x => x.ID).Not().In("1", "2", "3").WithMessage("@PropertyName must not be one of the following values: (@ProhibitValues) !!!");
+            }
+        };
+
+        [Test]
+        public void Can_override_the_default_message_with_parameters()
+        {
+            // Arrange
+            var order = new Order
+            {
+                ID = "2",
+            };
+            var validator = new OrderValidator2();
+
+            // Action
+            var results = validator.GetValidationResult(order).ToList();
+
+            // Assert
+            Assert.AreEqual(1, results.Count());
+            Assert.AreEqual("Order.ID", results[0].MemberName);
+            Assert.AreEqual("ID must not be one of the following values: (1, 2, 3) !!!", results[0].Message);
+        }
     }
 }
 // ReSharper restore InconsistentNaming
