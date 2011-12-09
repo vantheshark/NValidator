@@ -14,8 +14,12 @@ namespace NValidator
     /// </summary>
     public class CompositeValidator<T> : TypeValidator<T>
     {
+        private List<IValidationBuilder<T>> ContextualValidationBuilders { get; set; }
+        
         internal override protected IEnumerable<ValidationResult> InternalGetValidationResult(T value, ValidationContext validationContext)
         {
+            ContextualValidationBuilders = new List<IValidationBuilder<T>>();
+
             var properties = TypeDescriptor.GetProperties(typeof (T));
             
             foreach (PropertyDescriptor property in properties)
@@ -31,7 +35,9 @@ namespace NValidator
                 }
                 AddValidatorForProperty(property.PropertyType, string.Format("{0}.{1}", ContainerName ?? typeof(T).Name, property.Name), property.GetValue(value));
             }
-            return base.InternalGetValidationResult(value, validationContext);
+            var results = base.InternalGetValidationResult(value, validationContext).ToList();
+            ValidationBuilders.RemoveAll(x => ContextualValidationBuilders.Contains(x));
+            return results;
         }
 
         private void AddValidatorForProperty(Type propertyType, string containerName, object propertyValue)
@@ -43,7 +49,7 @@ namespace NValidator
                 return;
             }
 
-            if (ValidationBuilders.Any(x => x.ChainName == containerName))
+            if (ValidationBuilders.Any(x => x.ChainName == containerName)) 
             {
                 // NOTE: Stop here because there is an existing validator manually set on that property
                 return;
@@ -58,6 +64,7 @@ namespace NValidator
                 builder.UpdateContainerName(containerName);
                 builder.Validator = validator;
                 ValidationBuilders.Add(builder);
+                ContextualValidationBuilders.Add(builder);
             }
         }
 

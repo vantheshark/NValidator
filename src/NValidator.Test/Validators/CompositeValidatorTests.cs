@@ -127,6 +127,37 @@ namespace NValidator.Test.Validators
             Assert.AreEqual("Order.OrderDetails[3].ProductCode", results[5].MemberName);
             Assert.AreEqual("ProductCode does not match condition.", results[5].Message);
         }
+
+        [Test]
+        public void CompositeValidator_must_reset_the_builders_to_original_state_after_validation()
+        {
+            // Arrange
+            ValidatorFactory.Current.Register<OrderDetailValidator>(true);
+            ValidatorFactory.Current.Register<CustomOrderDetailValidator>();
+
+            var order = new Order
+            {
+                OrderDetails = new[] {
+                                    new OrderDetail{Amount = 1, ProductCode = "1234"},
+                                    new OrderDetail{Price = 1000, ProductCode = "4567"},
+                                    new OrderDetail{Price = 1000, Amount = 1000},
+                                    new OrderDetail{Amount = 3, ProductCode = "VTN"},
+                                }
+            };
+            var order2 = new Order
+            {
+                OrderDetails = new OrderDetail[0]
+            };
+            var validator = new OrderValidator2();
+
+            // Action
+            var results1 = validator.GetValidationResult(order).ToList();
+            var results2 = validator.GetValidationResult(order2).ToList();
+
+            // Assert
+            Assert.AreEqual(6, results1.Count());
+            Assert.AreEqual(0, results2.Count());
+        }
     }
 }
 // ReSharper restore InconsistentNaming
