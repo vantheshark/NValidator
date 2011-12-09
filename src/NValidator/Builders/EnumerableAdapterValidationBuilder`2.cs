@@ -4,6 +4,13 @@ using System.Linq;
 
 namespace NValidator.Builders
 {
+    /// <summary>
+    /// An implementation of validation builder that is used to build validation rules against item inside a collection, a list, an array, etc
+    /// This class is used to make the method RulesForEach() of TypeValidator<T>
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    /// <typeparam name="TProperty">The type of the property.</typeparam>
+    /// <typeparam name="TItem">The type of the item.</typeparam>
     internal class EnumerableAdapterValidationBuilder<T, TProperty, TItem> : ValidationBuilder<T, TProperty> where TProperty : IEnumerable<TItem>
     {
         public IValidationBuilder<T, TItem> InternalBuilder { get; private set; }

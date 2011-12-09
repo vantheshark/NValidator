@@ -7,8 +7,16 @@ namespace NValidator.Builders
 {
     internal class InternalTypeValidator<TItem> : TypeValidator<TItem>
     {
+        // Becaue TypeValidator is an abstract class
     }
 
+    /// <summary>
+    /// An implementation of validation builder that is used to build validation rules against item inside a collection, a list, an array, etc
+    /// This class is used to make the extension method ForEach()
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    /// <typeparam name="TProperty">The type of the property.</typeparam>
+    /// <typeparam name="TItem">The type of the item.</typeparam>
     internal class CompositeValidationBuilder<T, TProperty, TItem> : ValidationBuilder<T, TProperty> where TProperty : IEnumerable<TItem>
     {
         public CompositeValidationBuilder(IValidationBuilder<T, TProperty> previousBuilder) :

@@ -5,6 +5,11 @@ using System.Linq.Expressions;
 
 namespace NValidator.Builders
 {
+    /// <summary>
+    /// An implementation of IValidationBuilder<T, TProperty> that is used to build validation rules for a set of properties that have the same data type
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    /// <typeparam name="TProperty">The type of the property.</typeparam>
     internal class SharedRulesValidationBuilder<T, TProperty> : ValidationBuilder<T, TProperty>
     {
         private readonly Expression<Func<T, TProperty>>[] _expressions;

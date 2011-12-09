@@ -44,6 +44,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Builders\ConditionalValidationBuilder`1.cs" />
     <Compile Include="Builders\SharedRulesValidationBuilder`2.cs" />
     <Compile Include="Builders\EnumerableAdapterValidationBuilder`2.cs" />
     <Compile Include="Builders\CompositeValidationBuilder`2.cs" />

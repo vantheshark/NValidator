@@ -23,7 +23,18 @@ namespace NValidator
         /// The default type of the builder.
         /// </value>
         public Type DefaultBuilderType { get; set; }
+
         protected List<IValidationBuilder<T>> ValidationBuilders { get; set; }
+
+        /// <summary>
+        /// Gets or sets the contextual validation builders.
+        /// This is the list of builders that can be added to the predefined ValidationBuilders base on the validation context.
+        /// <para>This list is used to keep track of new added builders to ValidationBuilders and reset the original ValidationBuilders to the previous state after validation</para>
+        /// </summary>
+        /// <value>
+        /// The contextual validation builders.
+        /// </value>
+        protected List<IValidationBuilder<T>> ContextualValidationBuilders { get; set; }
 
         protected TypeValidator()
         {
@@ -67,6 +78,19 @@ namespace NValidator
             return newBuilder;
         }
 
+        public void When(Func<T, bool> condition, Action ruleAction)
+        {
+            var originalBuilders = new List<IValidationBuilder<T>>(ValidationBuilders);
+            ruleAction();
+            var setOfValidationBuilders = new ConditionalValidationBuilder<T>(condition)
+            {
+                InternalBuilders = ValidationBuilders.Except(originalBuilders).ToList()
+            };
+
+            ValidationBuilders.Add(setOfValidationBuilders);
+            ValidationBuilders.RemoveAll(setOfValidationBuilders.InternalBuilders.Contains);
+        }
+
         public IFluentValidationBuilder<T, TItem> RuleForEach<TItem>(Expression<Func<T, IEnumerable<TItem>>> expression)
         {
             var dummyBuilder = CreateGenericBuilder(expression);
@@ -78,7 +102,19 @@ namespace NValidator
 
         public sealed override IEnumerable<ValidationResult> GetValidationResult(T value, ValidationContext validationContext)
         {
-            return InternalGetValidationResult(value, validationContext);
+            BuildContextualValidationBuilders(value);
+            var results = InternalGetValidationResult(value, validationContext).ToList();
+            ValidationBuilders.RemoveAll(x => ContextualValidationBuilders.Contains(x));
+            ContextualValidationBuilders.Clear();
+            return results;
+        }
+
+        protected virtual void BuildContextualValidationBuilders(T value)
+        {
+            if (ContextualValidationBuilders == null)
+            {
+                ContextualValidationBuilders = new List<IValidationBuilder<T>>();
+            }
         }
 
         internal virtual protected IEnumerable<ValidationResult> InternalGetValidationResult(T value, ValidationContext validationContext)
