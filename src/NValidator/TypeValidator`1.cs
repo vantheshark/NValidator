@@ -119,44 +119,7 @@ namespace NValidator
 
         internal virtual protected IEnumerable<ValidationResult> InternalGetValidationResult(T value, ValidationContext validationContext)
         {
-            foreach (var b in ValidationBuilders)
-            {
-                var builder = b;
-                while (builder != null)
-                {
-                    if (validationContext.ShouldIgnore(ContainerName))
-                    {
-                        continue;// while, go to next builder
-                    }
-
-                    if (ContainerName != null)
-                    {
-                        builder.UpdateContainerName(ContainerName);
-                    }
-
-                    validationContext = validationContext ?? new ValidationContext();
-                    validationContext.ContainerInstance = value;
-
-                    var results = builder.Validate(value, validationContext).ToList();
-                    var foundError = false;
-                    foreach (var validationResult in results)
-                    {
-                        if (validationContext.ShouldIgnore(validationResult.MemberName))
-                        {
-                            continue;
-                        }
-                        foundError = true;
-                        yield return validationResult;
-                    }
-
-                    if (foundError && builder.StopChainOnError)
-                    {
-                        break; // while, dont go to next builder
-                    }
-
-                    builder = builder.Next;
-                }
-            }
+            return ValidationBuilders.GetValidationResults(value, ContainerName, validationContext);
         }
 
         protected virtual IValidationBuilder<T, TProperty> CreateGenericBuilder<TProperty>(Expression<Func<T, TProperty>> expression)

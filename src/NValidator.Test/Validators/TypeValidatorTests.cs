@@ -68,14 +68,15 @@ namespace NValidator.Test.Validators
             {
                 When(x => x.FirstOrderDetail != null, () =>
                 {
-                    RuleFor(x => x.FirstOrderDetail.Price).GreaterThan(0);
+                    RuleFor(x => x.FirstOrderDetail.Price).GreaterThan(0).LessThanOrEqual(1000);
 
-                    RuleFor(x => x.FirstOrderDetail.Amount).GreaterThan(0);
+                    RuleFor(x => x.FirstOrderDetail.Amount).GreaterThan(0).LessThanOrEqual(1000);
 
                     RuleFor(x => x.FirstOrderDetail.ProductCode).StopOnFirstError().NotNull().NotEmpty();
                 });
             }
         }
+
         [Test]
         public void When_should_return_validation_results_for_the_builder_under_condition()
         {
@@ -99,6 +100,36 @@ namespace NValidator.Test.Validators
 
             Assert.AreEqual("Order.FirstOrderDetail.ProductCode", results[2].MemberName);
             Assert.AreEqual("ProductCode must not be null.", results[2].Message);
+        }
+
+        [Test]
+        public void When_should_perform_validation_on_all_builders_in_the_chain()
+        {
+            // Arrange
+            var builder = new WhenOrderValidator();
+            var order = new Order
+            {
+                FirstOrderDetail = new OrderDetail
+                                       {
+                                           Amount = 2000,
+                                           Price = 2000,
+                                           ProductCode = ""
+                                       }
+            };
+
+            // Action
+            var results = builder.GetValidationResult(order).ToList();
+
+            // Assert
+            Assert.AreEqual(3, results.Count());
+            Assert.AreEqual("Order.FirstOrderDetail.Price", results[0].MemberName);
+            Assert.AreEqual("Price must be less than or equal 1000.", results[0].Message);
+
+            Assert.AreEqual("Order.FirstOrderDetail.Amount", results[1].MemberName);
+            Assert.AreEqual("Amount must be less than or equal 1000.", results[1].Message);
+
+            Assert.AreEqual("Order.FirstOrderDetail.ProductCode", results[2].MemberName);
+            Assert.AreEqual("ProductCode cannot be empty.", results[2].Message);
         }
 
         [Test]

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace NValidator.Builders
 {
@@ -59,11 +60,7 @@ namespace NValidator.Builders
             var results = new List<ValidationResult>();
             if (_condition != null && _condition(container))
             {
-                foreach (var builder in InternalBuilders)
-                {
-                    builder.UpdateContainerName(propertyChain);
-                    results.AddRange(builder.Validate(container, validationContext));
-                }
+                results = InternalBuilders.GetValidationResults(container, propertyChain, validationContext).ToList();
             }
 
             if (AfterValidation != null)

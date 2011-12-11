@@ -1,9 +1,11 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Linq.Expressions;
 
 namespace NValidator.Builders
 {
-    public class ValidationBuilderHelpers
+    public static class ValidationBuilderHelpers
     {
         internal static IValidationBuilder<T, TProperty> CreateGenericBuilder<T, TProperty>(Expression<Func<T, TProperty>> expression, Type defaultBuilderType)
         {
@@ -140,6 +142,48 @@ namespace NValidator.Builders
             }
 
             return newBeginingBuilder;
+        }
+
+        public static IEnumerable<ValidationResult> GetValidationResults<T>(this IEnumerable<IValidationBuilder<T>> builders, T containerObject, string containerName, ValidationContext validationContext)
+        {
+            foreach (var b in builders)
+            {
+                var builder = b;
+                while (builder != null)
+                {
+                    if (validationContext.ShouldIgnore(containerName))
+                    {
+                        continue;// while, go to next builder
+                    }
+
+                    if (containerName != null)
+                    {
+                        builder.UpdateContainerName(containerName);
+                    }
+
+                    validationContext = validationContext ?? new ValidationContext();
+                    validationContext.ContainerInstance = containerObject;
+
+                    var results = builder.Validate(containerObject, validationContext).ToList();
+                    var foundError = false;
+                    foreach (var validationResult in results)
+                    {
+                        if (validationContext.ShouldIgnore(validationResult.MemberName))
+                        {
+                            continue;
+                        }
+                        foundError = true;
+                        yield return validationResult;
+                    }
+
+                    if (foundError && builder.StopChainOnError)
+                    {
+                        break; // while, dont go to next builder
+                    }
+
+                    builder = builder.Next;
+                }
+            }
         }
     }
 }
