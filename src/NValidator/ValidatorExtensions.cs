@@ -194,13 +194,26 @@ namespace NValidator
                 if (results != null && results.Count() == 1)
                 {
                     var item = results.First();
-                    item.Message = message;
-                    return new[] { item };
+                    var newItem = new FormattableMessageResult(item is FormattableMessageResult
+                                                                    ? (item as FormattableMessageResult).Params
+                                                                    : new Dictionary<string, object>());
+
+                    newItem.Message = message;
+                    return new[] { newItem };
                 }
                 return results;
             };
             validationBuilder.ToBuilder().Previous.Validator = newValidator;
             return validationBuilder;
+        }
+
+        /// <summary>
+        /// Override the error message of the first validation result if the results has only 1 item. Otherwise, it returns the original result set.
+        /// <para>It makes sense only if the validator produces only 1 error message such as NotNullValidator, NotEmptyValidator, PredicateValidator, etc.</para>
+        /// </summary>
+        public static IFluentValidationBuilder<T, TProperty> WithLocalizedMessage<T, TProperty>(this IPostInitFluentValidationBuilder<T, TProperty> validationBuilder, object messageKey)
+        {
+            return WithMessage(validationBuilder, ValidatorFactory.Config.DefaultErrorMessageProvider.GetError(messageKey));
         }
 
         /// <summary>
@@ -232,8 +245,12 @@ namespace NValidator
                 if (vResults != null && vResults.Count() == 1)
                 {
                     var item = vResults.First();
-                    item.Message = message(o);
-                    return new[] { item };
+                    var newItem = new FormattableMessageResult(item is FormattableMessageResult
+                                                                    ? (item as FormattableMessageResult).Params
+                                                                    : new Dictionary<string, object>());
+
+                    newItem.Message = message(o);
+                    return new[] { newItem };
                 }
                 return vResults;
             };

@@ -33,7 +33,7 @@ namespace NValidator.Validators
             {
                 yield return new ValidationResult
                 {
-                    Message = "@PropertyName does not match condition."
+                    Message = ErrorMessageProvider.GetError("NValidator_Validators_PredicateValidator_GetValidationResult")
                 };
             }
         }

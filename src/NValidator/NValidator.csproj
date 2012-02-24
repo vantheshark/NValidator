@@ -56,8 +56,17 @@
     <Compile Include="Builders\ValidationBuilderHelpers.cs" />
     <Compile Include="CompositeValidator`1.cs" />
     <Compile Include="DefaultValidatorFactory.cs" />
+    <Compile Include="Properties\ErrorMessages.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>ErrorMessages.resx</DependentUpon>
+    </Compile>
+    <Compile Include="IErrorMessageProvider.cs" />
     <Compile Include="IHaveContainer.cs" />
+    <Compile Include="ILogger.cs" />
     <Compile Include="INegatableValidator.cs" />
+    <Compile Include="ResourceErrorMessageProvider.cs" />
+    <Compile Include="TraceLogger.cs" />
     <Compile Include="TypeExtensions.cs" />
     <Compile Include="TypeValidator`1.cs" />
     <Compile Include="BaseValidator.cs" />
@@ -88,9 +97,16 @@
     <Compile Include="Validators\PredicateValidator.cs" />
     <Compile Include="Validators\RegularExpressionValidator.cs" />
   </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Properties\ErrorMessages.resx">
+      <Generator>PublicResXFileCodeGenerator</Generator>
+      <LastGenOutput>ErrorMessages.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
-    <PostBuildEvent>COPY /Y "$(TargetPath)" "$(SolutionDir)..\nuget\lib\net40\"</PostBuildEvent>
+    <PostBuildEvent>COPY /Y "$(TargetPath)" "$(SolutionDir)..\nuget\lib\net40\"
+COPY /Y "$(TargetPath)" "$(SolutionDir)..\bin\net40\"</PostBuildEvent>
   </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

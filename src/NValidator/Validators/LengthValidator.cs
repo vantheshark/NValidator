@@ -25,7 +25,7 @@ namespace NValidator.Validators
 
         public override IEnumerable<ValidationResult> GetValidationResult(T value, ValidationContext validationContext)
         {
-            const string defaultMessage = "@PropertyName must be between @MinimumLength and @MaximumLength in length. You had @TotalLength in length.";
+            string defaultMessage = ErrorMessageProvider.GetError("NValidator_Validators_LengthValidator_GetValidationResult");
             var enumerable = value as IEnumerable;
             _count = 0;
             if (enumerable != null)
@@ -50,7 +50,6 @@ namespace NValidator.Validators
                 {
                     Message = defaultMessage
                 };
-                yield break;
             }
         }
     }

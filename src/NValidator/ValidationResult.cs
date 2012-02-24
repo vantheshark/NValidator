@@ -22,7 +22,7 @@ namespace NValidator
 
     public class FormattableMessageResult : ValidationResult
     {
-        private readonly Dictionary<string, object> _param;
+        public Dictionary<string, object> Params { get; private set; }
 
         public FormattableMessageResult(Dictionary<string, object> param)
         {
@@ -30,7 +30,7 @@ namespace NValidator
             {
                 throw new ArgumentNullException("param");
             }
-            _param = param;
+            Params = param;
         }
 
         private string _messageFormat;
@@ -43,7 +43,7 @@ namespace NValidator
                 if (_message == null)
                 {
                     var result = new StringBuilder(_messageFormat);
-                    foreach (var p in _param)
+                    foreach (var p in Params)
                     {
                         result.Replace(p.Key, p.Value.ToString());
                     }

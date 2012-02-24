@@ -20,6 +20,8 @@ namespace NValidator.Test.Models
     {
         public UserValidator()
         {
+            Logger.Debug("Creating rules for OrderDetail Validator");
+
             RuleFor(user => user.Id)
                 .NotEmpty()
                 .NotNull();

@@ -24,7 +24,7 @@ namespace NValidator.Builders
             Validator = ValidatorFactory.NullValidator;
             ContainerName = previousBuilder.ChainName ?? previousBuilder.ContainerName;
 
-            InternalBuilder = (IValidationBuilder<T, TItem>)ValidationBuilderHelpers.CreateGenericBuilder<T>(typeof(TItem), default(TItem), ValidatorFactory.DefaultValidationBuilderType);
+            InternalBuilder = (IValidationBuilder<T, TItem>)ValidationBuilderHelpers.CreateGenericBuilder<T>(typeof(TItem), default(TItem), ValidatorFactory.Config.DefaultValidationBuilderType);
         }
 
         protected internal override IEnumerable<ValidationResult> GetResults(ValidationContext validationContext, T containerObject, out string propertyChain)

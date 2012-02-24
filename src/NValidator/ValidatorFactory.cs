@@ -1,5 +1,6 @@
 ﻿using System;
 using NValidator.Builders;
+using NValidator.Properties;
 using NValidator.Validators;
 
 namespace NValidator
@@ -88,15 +89,30 @@ namespace NValidator
     {
         static ValidatorFactory()
         {
+            Config = new ValidationConfig
+            {
+                DefaultValidationBuilderType = typeof(ValidationBuilder<,>),
+                DefaultLogger = new TraceLogger(),
+                DefaultErrorMessageProvider = new ResourceErrorMessageProvider(typeof(ErrorMessages))
+            };
+
             Current = new DefaultValidatorFactory();
             NullValidator = new DoNothingValidator();
-            DefaultValidationBuilderType = typeof (ValidationBuilder<,>);
         }
 
         public static IValidator NullValidator { get; private set; }
 
         public static IValidatorFactory Current { get; set; }
 
-        public static Type DefaultValidationBuilderType { get; set; }
+        public static ValidationConfig Config { get; set; }
+    }
+
+    public class ValidationConfig
+    {
+        public IErrorMessageProvider DefaultErrorMessageProvider { get; set; }
+
+        public Type DefaultValidationBuilderType { get; set; }
+
+        public ILogger DefaultLogger { get; set; }
     }
 }

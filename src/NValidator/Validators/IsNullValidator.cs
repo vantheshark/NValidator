@@ -13,7 +13,7 @@ namespace NValidator.Validators
         {
             yield return new ValidationResult
             {
-                Message = "@PropertyName must be null."
+                Message = ErrorMessageProvider.GetError("NValidator_Validators_IsNullValidator_GetErrors")
             };
         }
 
@@ -21,7 +21,7 @@ namespace NValidator.Validators
         {
             yield return new ValidationResult
             {
-                Message = "@PropertyName must not be null."
+                Message = ErrorMessageProvider.GetError("NValidator_Validators_IsNullValidator_GetNegatableErrors")
             };
         }
     }

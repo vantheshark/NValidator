@@ -12,6 +12,7 @@ namespace NValidator.Test.Models
     {
         public OrderDetailValidator()
         {
+            Logger.Debug("Creating rules for OrderDetail Validator");
             RuleFor(x => x.ProductCode).Not().Null().NotEmpty().Length(3, 5);
         }
     }

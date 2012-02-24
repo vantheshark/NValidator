@@ -14,6 +14,7 @@ namespace NValidator.Test.Models
     {
         public AddressValidator()
         {
+            Logger.Debug("Creating rules for Address Validator");
             RuleFor(address => address.Number)
                 .Match(@"[\w\d]+");
 

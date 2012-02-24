@@ -5,7 +5,7 @@ namespace NValidator.Validators
 {
     public sealed class LessThanOrEqualValidator<T, TProperty> : ComparisonValidator<T, TProperty> where TProperty : IComparable
     {
-        internal const string Message = "@PropertyName must be less than or equal @ComparisonValue.";
+        internal static readonly string Message = ValidatorFactory.Config.DefaultErrorMessageProvider.GetError("NValidator_Validators_LessThanOrEqualValidator_Message");
 
         public LessThanOrEqualValidator(TProperty value)
             : base(value, Message, GreaterThanValidator<T, TProperty>.Message)

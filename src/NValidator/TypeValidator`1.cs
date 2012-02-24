@@ -23,6 +23,7 @@ namespace NValidator
         /// The default type of the builder.
         /// </value>
         public Type DefaultBuilderType { get; set; }
+        protected ILogger Logger { get; set; }
 
         protected List<IValidationBuilder<T>> ValidationBuilders { get; set; }
 
@@ -39,7 +40,8 @@ namespace NValidator
         protected TypeValidator()
         {
             ValidationBuilders = new List<IValidationBuilder<T>>();
-            DefaultBuilderType = ValidatorFactory.DefaultValidationBuilderType;
+            DefaultBuilderType = ValidatorFactory.Config.DefaultValidationBuilderType;
+            Logger = ValidatorFactory.Config.DefaultLogger;
         }
 
         public void UpdateContainerName(string containerName)

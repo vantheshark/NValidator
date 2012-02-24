@@ -5,6 +5,13 @@ namespace NValidator
 {
     public abstract class BaseValidator : IValidator
     {
+        protected BaseValidator()
+        {
+            ErrorMessageProvider = ValidatorFactory.Config.DefaultErrorMessageProvider;
+        }
+
+        public IErrorMessageProvider ErrorMessageProvider { get; set; }
+
         public bool IsValid(object value)
         {
             return IsValid(value, null);
@@ -13,7 +20,7 @@ namespace NValidator
         public virtual bool IsValid(object value, ValidationContext validationContext)
         {
             var result = GetValidationResult(value, validationContext);
-            return result == null || result.Count() == 0;
+            return result == null || !result.Any();
         }
 
         public IEnumerable<ValidationResult> GetValidationResult(object value)

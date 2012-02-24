@@ -216,7 +216,7 @@ namespace NValidator.Builders
         /// </returns>
         public virtual object Clone()
         {
-            var b = ValidationBuilderHelpers.CreateGenericBuilder(Expression, ValidatorFactory.DefaultValidationBuilderType);
+            var b = ValidationBuilderHelpers.CreateGenericBuilder(Expression, ValidatorFactory.Config.DefaultValidationBuilderType);
             b.UpdateContainerName(ContainerName);
             b.BeforeValidation = BeforeValidation;
             b.StopChainOnError = StopChainOnError;

@@ -14,7 +14,7 @@ namespace NValidator.Validators
             }
             yield return new ValidationResult
             {
-                Message = "@PropertyName cannot be empty."
+                Message = ErrorMessageProvider.GetError("NValidator_Validators_NotEmptyValidator_GetValidationResult")
             };
         }
     }

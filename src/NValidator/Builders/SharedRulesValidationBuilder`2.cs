@@ -26,7 +26,7 @@ namespace NValidator.Builders
 
             _expressions = expressions;
             Expression<Func<T, TProperty>> nullExpression = null;
-            InternalBuilder = ValidationBuilderHelpers.CreateGenericBuilder(nullExpression, ValidatorFactory.DefaultValidationBuilderType);
+            InternalBuilder = ValidationBuilderHelpers.CreateGenericBuilder(nullExpression, ValidatorFactory.Config.DefaultValidationBuilderType);
             InternalBuilder.BeforeValidation = previousBuilder.BeforeValidation;
             InternalBuilder.AfterValidation = previousBuilder.AfterValidation;
             InternalBuilder.Validator = ValidatorFactory.NullValidator;

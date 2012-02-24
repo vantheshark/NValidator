@@ -5,7 +5,7 @@ namespace NValidator.Validators
 {
     public class EqualValidator<T, TProperty> : ComparisonValidator<T, TProperty> where TProperty : IComparable
     {
-        internal const string Message = "@PropertyName must equal to @ComparisonValue.";
+        internal static readonly string Message = ValidatorFactory.Config.DefaultErrorMessageProvider.GetError("NValidator_Validators_EqualValidator_Message");
 
         public EqualValidator(TProperty value)
             : base(value, Message, NotEqualValidator<T, TProperty>.Message)
